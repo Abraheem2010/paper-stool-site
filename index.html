@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -43,7 +43,12 @@
     <a class="brand" href="#top" aria-label="Paper Stool home">
       <span>Paper</span>Stool
     </a>
-    <nav class="site-nav" aria-label="Main">
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-controls="site-nav" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
       <a href="#story">Story</a>
       <a href="#immersion">Immersion</a>
       <a href="#space">Space Logic</a>
@@ -525,8 +530,9 @@
     </figure>
   </div>
 
-  <button id="to-top" class="to-top" type="button" aria-label="Back to top">↑</button>
+  <button id="to-top" class="to-top" type="button" aria-label="Back to top">Top</button>
 
   <script src="script.js"></script>
 </body>
 </html>
+

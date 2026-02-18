@@ -145,6 +145,43 @@ body {
   flex-wrap: wrap;
 }
 
+.menu-toggle {
+  display: none;
+  width: 2.45rem;
+  height: 2.45rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffaf3;
+  color: var(--ink);
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.28rem;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 1rem;
+  height: 2px;
+  background: currentColor;
+  border-radius: 99px;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.menu-toggle.is-open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.menu-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.is-open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 .site-nav a,
 .header-cta {
   text-decoration: none;
@@ -1078,16 +1115,56 @@ main {
     padding-top: 1rem;
   }
 
+  .site-header {
+    position: sticky;
+    top: 0.55rem;
+    align-items: center;
+    overflow: visible;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    order: 2;
+    margin-left: auto;
+  }
+
+  .header-cta {
+    display: none;
+  }
+
   .site-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: 0.25rem;
-    scrollbar-width: thin;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    z-index: 26;
+    display: grid;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 250, 243, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 22px 36px rgba(17, 20, 24, 0.14);
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+
+  .site-nav.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .site-nav a {
-    flex: 0 0 auto;
+    width: 100%;
+    text-align: left;
+    padding: 0.58rem 0.72rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(0, 0, 0, 0.03);
   }
 
   .hero-copy h1 {

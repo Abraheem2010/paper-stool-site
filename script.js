@@ -45,9 +45,45 @@ toTopButton?.addEventListener("click", () => {
 });
 
 const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
+const siteNav = document.getElementById("site-nav");
+const menuToggle = document.getElementById("menu-toggle");
 const navSections = navLinks
   .map((link) => document.querySelector(link.getAttribute("href")))
   .filter(Boolean);
+
+function closeMobileMenu() {
+  if (!siteNav || !menuToggle) return;
+  siteNav.classList.remove("open");
+  menuToggle.classList.remove("is-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Open menu");
+}
+
+menuToggle?.addEventListener("click", () => {
+  if (!siteNav) return;
+  const isOpen = siteNav.classList.toggle("open");
+  menuToggle.classList.toggle("is-open", isOpen);
+  menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+});
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    if (window.innerWidth <= 760) closeMobileMenu();
+  });
+});
+
+document.addEventListener("click", (event) => {
+  if (!siteNav?.classList.contains("open") || !menuToggle) return;
+  const target = event.target;
+  if (!(target instanceof Node)) return;
+  if (siteNav.contains(target) || menuToggle.contains(target)) return;
+  closeMobileMenu();
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 760) closeMobileMenu();
+});
 
 const navObserver = new IntersectionObserver(
   (entries) => {
@@ -153,8 +189,13 @@ lightbox?.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (!lightbox?.classList.contains("open")) return;
-  if (event.key === "Escape") closeLightbox();
+  const lightboxOpen = Boolean(lightbox?.classList.contains("open"));
+  if (event.key === "Escape") {
+    if (lightboxOpen) closeLightbox();
+    closeMobileMenu();
+    return;
+  }
+  if (!lightboxOpen) return;
   if (event.key === "ArrowRight") stepLightbox(1);
   if (event.key === "ArrowLeft") stepLightbox(-1);
 });
