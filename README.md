@@ -1,20 +1,30 @@
 # Paper Stool Website
 
-Story-driven one-page product website for the Paper Stool concept.
+Premium one-page product website for the **Paper Stool** concept.
 
-## What This Version Includes
+## Overview
 
-- Visual story section with image-by-image explanations (train use flow)
-- Full-screen immersion layout for large displays
-- Space-efficiency logic (how distributed seating improves comfort)
-- Interactive capacity simulator with live seat calculations
-- Use-case blocks (transit, restaurants, events, home/workspace)
+This project presents a story-first landing page that explains how a foldable stool improves comfort and space usage in crowded environments (trains, events, restaurants, and compact homes).
+
+## Features
+
+- Full-screen hero and immersion layout
+- Visual story timeline with image-by-image explanation
+- Interactive capacity simulator (live seat distribution logic)
+- Use-case section for transit, hospitality, events, and home
 - Color collection section for product variants
-- Premium gallery with lightbox + keyboard navigation
-- Animated counters, section reveal system, active nav tracking
-- Lightweight parallax storytelling on train visuals
-- Scroll progress indicator and back-to-top utility
-- Demo video with performance-friendly media loading
+- Premium gallery with lightbox (mouse + keyboard navigation)
+- Animated counters and reveal-on-scroll sections
+- Sticky active navigation + scroll progress indicator
+- Back-to-top utility button
+- Client-side validated order form
+- Performance-minded media loading (`loading="lazy"`, `decoding="async"`)
+
+## Tech Stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript (no framework)
 
 ## Project Structure
 
@@ -23,8 +33,8 @@ project_AI/
   index.html
   styles.css
   script.js
-  .gitignore
   README.md
+  .gitignore
   assets/
     icons/
       favicon-32.png
@@ -37,11 +47,19 @@ project_AI/
 
 ## Run Locally
 
-1. Open `index.html` in any modern browser.
-2. Keep folder structure unchanged so media links remain valid.
+1. Keep the folder structure unchanged.
+2. Open `index.html` in a modern browser.
 
-## Editing Guide
+## Customize
 
-- Update copy/content in `index.html`.
-- Update visual design tokens and layout in `styles.css`.
-- Update interactions (reveal, lightbox, form validation, hero tilt) in `script.js`.
+- Edit content and section structure in `index.html`
+- Edit visual system, layout, and responsiveness in `styles.css`
+- Edit interactions and behavior in `script.js`
+
+## Deployment
+
+This project can be deployed as a static site on:
+
+- GitHub Pages
+- Netlify
+- Vercel (static output)
