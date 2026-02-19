@@ -3183,3 +3183,43 @@ html[data-theme="dark"] .train-compare {
     transition: none !important;
   }
 }
+
+/* Full-image visibility fix: avoid cropping in Story / Train media */
+.story-media,
+.train-slide-media {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(233, 243, 255, 0.8), rgba(220, 235, 253, 0.9));
+}
+
+html[data-theme="dark"] .story-media,
+html[data-theme="dark"] .train-slide-media {
+  background: linear-gradient(180deg, rgba(24, 45, 82, 0.82), rgba(18, 36, 68, 0.9));
+}
+
+.story-media img,
+.train-slide-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center;
+  transform: none !important;
+}
+
+.story-media img {
+  min-height: clamp(16rem, 30vw, 24rem);
+}
+
+.train-slide-media {
+  aspect-ratio: 16 / 9;
+}
+
+.train-slide-media img {
+  height: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .story-card:hover .story-media img {
+    transform: none !important;
+  }
+}
