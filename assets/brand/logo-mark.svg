@@ -1,0 +1,24 @@
+<svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="markTitle markDesc">
+  <title id="markTitle">PaperStool Mark</title>
+  <desc id="markDesc">Fold-inspired PS icon mark.</desc>
+  <defs>
+    <linearGradient id="markGlow" x1="20" y1="16" x2="70" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB49A"/>
+      <stop offset="0.55" stop-color="#FF8A63"/>
+      <stop offset="1" stop-color="#E65F44"/>
+    </linearGradient>
+    <linearGradient id="markSurface" x1="13" y1="11" x2="82" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D2A39" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#0F1924" stop-opacity="0.98"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="72" height="72" rx="21" fill="url(#markSurface)"/>
+  <rect x="8.75" y="8.75" width="70.5" height="70.5" rx="20.25" stroke="#E9F0F8" stroke-opacity="0.22" stroke-width="1.5"/>
+
+  <path d="M27 56.7V34.2C27 29.6 30.7 25.9 35.3 25.9H42.2V65H35.3C30.7 65 27 61.3 27 56.7Z" fill="url(#markGlow)"/>
+  <path d="M45.8 65V25.9H52.7C57.3 25.9 61 29.6 61 34.2V56.7C61 61.3 57.3 65 52.7 65H45.8Z" fill="url(#markGlow)" fill-opacity="0.9"/>
+  <path d="M42.4 25.9H45.7V65H42.4V25.9Z" fill="#FFE2D4" fill-opacity="0.86"/>
+
+  <path d="M22.5 21.3H65.5" stroke="#FFD1BF" stroke-opacity="0.64" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

@@ -96,6 +96,7 @@ skeletonBlocks.forEach((block) => {
 const scrollProgressFill = document.getElementById("scroll-progress-fill");
 const toTopButton = document.getElementById("to-top");
 const mobileStickyCta = document.getElementById("mobile-sticky-cta");
+const siteHeader = document.querySelector(".site-header");
 
 function updateScrollUI() {
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -108,6 +109,10 @@ function updateScrollUI() {
 
   if (toTopButton) {
     toTopButton.classList.toggle("visible", scrollTop > 420);
+  }
+
+  if (siteHeader instanceof HTMLElement) {
+    siteHeader.classList.toggle("is-scrolled", scrollTop > 16);
   }
 
   if (mobileStickyCta) {
