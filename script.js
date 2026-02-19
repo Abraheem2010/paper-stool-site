@@ -50,6 +50,31 @@ const menuToggle = document.getElementById("menu-toggle");
 const navSections = navLinks
   .map((link) => document.querySelector(link.getAttribute("href")))
   .filter(Boolean);
+const toggleAdvancedButton = document.getElementById("toggle-advanced");
+const optionalSections = Array.from(document.querySelectorAll(".optional-section"));
+const storySection = document.getElementById("story");
+const toggleStoryButton = document.getElementById("toggle-story");
+
+toggleAdvancedButton?.addEventListener("click", () => {
+  const isOpen = document.body.classList.toggle("show-advanced");
+  toggleAdvancedButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  toggleAdvancedButton.textContent = isOpen ? "Hide Advanced Insights" : "Show Advanced Insights";
+
+  if (isOpen) {
+    optionalSections.forEach((section) => section.classList.add("visible"));
+    optionalSections[0]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+toggleStoryButton?.addEventListener("click", () => {
+  if (!storySection) return;
+  const isOpen = storySection.classList.toggle("show-full-story");
+  toggleStoryButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  toggleStoryButton.textContent = isOpen ? "Show Short Story" : "Show Full 6-Step Story";
+  if (isOpen) {
+    storySection.querySelectorAll(".extra-story").forEach((card) => card.classList.add("visible"));
+  }
+});
 
 function closeMobileMenu() {
   if (!siteNav || !menuToggle) return;

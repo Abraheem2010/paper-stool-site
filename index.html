@@ -50,14 +50,10 @@
     </button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
       <a href="#story">Story</a>
-      <a href="#immersion">Immersion</a>
-      <a href="#space">Space Logic</a>
       <a href="#simulator">Simulator</a>
       <a href="#use-cases">Use Cases</a>
-      <a href="#colors">Colors</a>
-      <a href="#design-suggestions">Design Ideas</a>
-      <a href="#impact">Impact</a>
       <a href="#gallery">Gallery</a>
+      <a href="#demo-video">Video</a>
       <a href="#order">Order</a>
     </nav>
     <a class="header-cta" href="#order">Reserve</a>
@@ -97,7 +93,19 @@
       </div>
     </section>
 
-    <section id="immersion" class="section immersion reveal">
+    <section class="section reveal compact-toggle">
+      <div class="compact-toggle-card">
+        <h2>Cleaner View, Better Focus</h2>
+        <p>
+          This page starts with essential sections only. You can open advanced insights when you need deeper details.
+        </p>
+        <button id="toggle-advanced" class="btn btn-ghost" type="button" aria-expanded="false">
+          Show Advanced Insights
+        </button>
+      </div>
+    </section>
+
+    <section id="immersion" class="section immersion reveal optional-section">
       <div class="section-head">
         <p class="eyebrow">Immersive Experience</p>
         <h2>Built to own the full screen and command attention</h2>
@@ -129,7 +137,7 @@
         <h2>Frame by frame: how Paper Stool improves comfort and space usage</h2>
       </div>
 
-      <article class="story-card reveal">
+      <article class="story-card reveal extra-story">
         <figure class="story-media">
           <img src="assets/images/train-scene-01.jpg" alt="Crowded station scene where people stand while waiting" loading="lazy" decoding="async" data-parallax />
         </figure>
@@ -147,7 +155,7 @@
         </div>
       </article>
 
-      <article class="story-card reveal">
+      <article class="story-card reveal extra-story">
         <figure class="story-media">
           <img src="assets/images/train-scene-03.jpg" alt="Commuter carrying foldable stool setup in transit environment" loading="lazy" decoding="async" data-parallax />
         </figure>
@@ -165,7 +173,7 @@
         </div>
       </article>
 
-      <article class="story-card reveal">
+      <article class="story-card reveal extra-story">
         <figure class="story-media">
           <img src="assets/images/train-scene-04.png" alt="Passenger opening Paper Stool quickly in station area" loading="lazy" decoding="async" data-parallax />
         </figure>
@@ -236,9 +244,13 @@
           </ul>
         </div>
       </article>
+
+      <button id="toggle-story" class="btn btn-ghost story-toggle" type="button" aria-expanded="false">
+        Show Full 6-Step Story
+      </button>
     </section>
 
-    <section id="space" class="section reveal">
+    <section id="space" class="section reveal optional-section">
       <div class="section-head">
         <p class="eyebrow">Space Logic</p>
         <h2>Why it works better in crowded environments</h2>
@@ -341,7 +353,7 @@
       </div>
     </section>
 
-    <section id="colors" class="section reveal">
+    <section id="colors" class="section reveal optional-section">
       <div class="section-head">
         <p class="eyebrow">Color Collection</p>
         <h2>Style options that fit home, business, and events</h2>
@@ -357,7 +369,7 @@
       <p class="section-note">Custom color batches can be prepared for restaurants, event brands, and hospitality spaces.</p>
     </section>
 
-    <section id="design-suggestions" class="section reveal">
+    <section id="design-suggestions" class="section reveal optional-section">
       <div class="section-head">
         <p class="eyebrow">Design Lab</p>
         <h2>A/B design experiments to keep the experience addictive</h2>
@@ -409,7 +421,7 @@
       <p class="section-note">These ideas are ready to become a v2 product landing page roadmap.</p>
     </section>
 
-    <section id="impact" class="section reveal">
+    <section id="impact" class="section reveal optional-section">
       <div class="section-head">
         <p class="eyebrow">Projected Impact</p>
         <h2>What this concept can improve in busy environments</h2>

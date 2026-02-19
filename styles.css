@@ -384,6 +384,40 @@ main {
   scroll-margin-top: 6.5rem;
 }
 
+.optional-section {
+  display: none;
+}
+
+body.show-advanced .optional-section {
+  display: block;
+}
+
+.compact-toggle {
+  margin-top: 1.2rem;
+}
+
+.compact-toggle-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(130deg, #fff8ee, #f2fbf9);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem 1.05rem;
+  display: grid;
+  gap: 0.55rem;
+  max-width: 52rem;
+}
+
+.compact-toggle-card h2 {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.compact-toggle-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
 .section-head h2 {
   margin: 0.5rem 0 0;
   font-family: "Sora", sans-serif;
@@ -533,6 +567,18 @@ main {
 .story-copy ul {
   margin: 0.75rem 0 0;
   padding-left: 1rem;
+}
+
+.extra-story {
+  display: none;
+}
+
+#story.show-full-story .extra-story {
+  display: grid;
+}
+
+.story-toggle {
+  margin-top: 1rem;
 }
 
 .logic-grid {
