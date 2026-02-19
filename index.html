@@ -111,8 +111,13 @@
           </li>
         </ul>
       </div>
-      <div class="hero-visual" id="hero-tilt" data-skeleton>
-        <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Real commute setup: opening Paper Stool from compact shape to seat-ready form" width="1200" height="1200" loading="eager" fetchpriority="high" decoding="async" />
+      <div class="hero-visual hero-video-shell" id="hero-tilt" data-skeleton>
+        <!-- Drop your hero.mp4 here: assets/video/hero.mp4 -->
+        <video class="hero-video" autoplay loop muted playsinline preload="metadata" poster="assets/images/paper-stool-1200.jpg" aria-label="Paper Stool hero demo loop">
+          <source src="assets/video/hero.mp4" type="video/mp4" />
+          <source src="assets/video/paper-stool-video.mp4" type="video/mp4" />
+          <img src="assets/images/paper-stool-1200.jpg" alt="Paper Stool product setup" width="1200" height="1600" loading="eager" fetchpriority="high" decoding="async" />
+        </video>
       </div>
     </section>
 
@@ -190,6 +195,150 @@
       <div class="section-head reveal">
         <p class="eyebrow">Visual Story</p>
         <h2>Frame by frame: how Paper Stool improves comfort and space usage</h2>
+      </div>
+      <!-- Photo brief for future replacements:
+        Keywords: modern train interior, real commuter flow, safe aisle clearance, natural expressions, no masks, neutral daylight.
+        Style constraints: documentary realism, high dynamic range, consistent warm-neutral grading, no surreal AI artifacts.
+      -->
+      <div class="train-storyline reveal" aria-label="Train storyline experience">
+        <div class="train-storyline-head">
+          <p class="eyebrow">Train Storyline</p>
+          <p class="train-step-indicator"><span id="train-step-current">01</span><span>/06</span></p>
+        </div>
+        <div id="train-story-track" class="train-story-track" role="region" aria-label="Train storyline carousel" tabindex="0">
+          <article class="train-slide" data-story-step="01">
+            <figure class="train-slide-media" data-skeleton>
+              <img src="assets/images/train-scene-01.jpg" alt="Baseline train crowd with limited fixed seating during peak hour" width="1024" height="1024" loading="lazy" decoding="async" />
+              <figcaption>Peak hour. Seats are fixed. Crowding rises.</figcaption>
+              <div class="train-visual-overlay" aria-hidden="true">
+                <span class="train-state seated">Seated 8</span>
+                <span class="train-state standing">Standing 16</span>
+                <svg viewBox="0 0 120 20" focusable="false">
+                  <path d="M4 10h112" />
+                  <path d="M97 4l19 6-19 6" />
+                </svg>
+              </div>
+            </figure>
+            <div class="train-slide-copy">
+              <p class="story-step">01</p>
+              <h3>Problem</h3>
+              <p>Fixed seat zones saturate quickly, so comfort drops for everyone still standing.</p>
+            </div>
+          </article>
+
+          <article class="train-slide" data-story-step="02">
+            <figure class="train-slide-media" data-skeleton>
+              <img src="assets/images/train-scene-08.jpg" alt="Dense train carriage showing constrained movement and space pressure" width="1024" height="963" loading="lazy" decoding="async" />
+              <figcaption>Aisles must stay clear. Standing blocks flow.</figcaption>
+              <div class="train-visual-overlay" aria-hidden="true">
+                <span class="train-state seated">Seated 10</span>
+                <span class="train-state standing">Standing 18</span>
+                <svg viewBox="0 0 120 20" focusable="false">
+                  <path d="M4 10h112" />
+                  <path d="M97 4l19 6-19 6" />
+                </svg>
+              </div>
+            </figure>
+            <div class="train-slide-copy">
+              <p class="story-step">02</p>
+              <h3>Constraint</h3>
+              <p>Without flexible seats, available edge-space stays underused while circulation gets tighter.</p>
+            </div>
+          </article>
+
+          <article class="train-slide" data-story-step="03">
+            <figure class="train-slide-media" data-skeleton>
+              <img src="assets/images/train-scene-04.png" alt="Portable stool usage near train entry zone to add compact seating points" width="512" height="512" loading="lazy" decoding="async" />
+              <figcaption>PaperStool folds flat and fits in a bag.</figcaption>
+              <div class="train-visual-overlay" aria-hidden="true">
+                <span class="train-state seated">Seated 12</span>
+                <span class="train-state standing">Standing 14</span>
+                <svg viewBox="0 0 120 20" focusable="false">
+                  <path d="M4 10h112" />
+                  <path d="M97 4l19 6-19 6" />
+                </svg>
+              </div>
+            </figure>
+            <div class="train-slide-copy">
+              <p class="story-step">03</p>
+              <h3>Solution</h3>
+              <p>A compact folded profile unlocks quick seating exactly where a fixed bench cannot be installed.</p>
+            </div>
+          </article>
+
+          <article class="train-slide" data-story-step="04">
+            <figure class="train-slide-media" data-skeleton>
+              <img src="assets/images/train-scene-10.jpg" alt="Passengers using portable stools in a train to activate underused space" width="1024" height="559" loading="lazy" decoding="async" />
+              <figcaption>Unfold - lock - sit in seconds.</figcaption>
+              <div class="train-visual-overlay" aria-hidden="true">
+                <span class="train-state seated">Seated 15</span>
+                <span class="train-state standing">Standing 10</span>
+                <svg viewBox="0 0 120 20" focusable="false">
+                  <path d="M4 10h112" />
+                  <path d="M97 4l19 6-19 6" />
+                </svg>
+              </div>
+            </figure>
+            <div class="train-slide-copy">
+              <p class="story-step">04</p>
+              <h3>Activation</h3>
+              <p>Fast deployment lets commuters switch from standing fatigue to stable support in short waits.</p>
+            </div>
+          </article>
+
+          <article class="train-slide" data-story-step="05">
+            <div class="train-slide-copy">
+              <p class="story-step">05</p>
+              <h3>Impact</h3>
+              <p>Same carriage footprint. More seated passengers. Cleaner flow through high-density stops.</p>
+            </div>
+            <div class="train-compare-wrap">
+              <div id="train-compare" class="train-compare" data-skeleton>
+                <img class="train-compare-image" src="assets/images/train-scene-01.jpg" alt="Baseline train condition with limited seating distribution" width="1024" height="1024" loading="lazy" decoding="async" />
+                <div id="train-compare-overlay" class="train-compare-overlay">
+                  <img class="train-compare-image" src="assets/images/train-scene-03.jpg" alt="With PaperStool distributed seating across the carriage" width="1024" height="1024" loading="lazy" decoding="async" />
+                </div>
+                <div id="train-compare-divider" class="train-compare-divider" aria-hidden="true"></div>
+                <span class="train-compare-label baseline">Baseline</span>
+                <span class="train-compare-label improved">With PaperStool</span>
+              </div>
+              <label class="sr-only" for="train-compare-range">Compare baseline and PaperStool impact</label>
+              <input id="train-compare-range" class="train-compare-range" type="range" min="15" max="85" value="52" />
+            </div>
+          </article>
+
+          <article class="train-slide" data-story-step="06">
+            <figure class="train-slide-media" data-skeleton>
+              <img src="assets/images/train-scene-06.jpg" alt="Portable stools integrated inside train while preserving movement lanes" width="1024" height="1008" loading="lazy" decoding="async" />
+              <figcaption>Portable seating adds flexible capacity.</figcaption>
+              <div class="train-visual-overlay" aria-hidden="true">
+                <span class="train-state seated">Seated 18</span>
+                <span class="train-state standing">Standing 6</span>
+                <svg viewBox="0 0 120 20" focusable="false">
+                  <path d="M4 10h112" />
+                  <path d="M97 4l19 6-19 6" />
+                </svg>
+              </div>
+            </figure>
+            <div class="train-slide-copy">
+              <p class="story-step">06</p>
+              <h3>Takeaway</h3>
+              <p>Portable seating extends capacity in real time, then folds away without permanent clutter.</p>
+            </div>
+          </article>
+        </div>
+        <div class="train-story-controls" aria-label="Train storyline controls">
+          <button id="train-story-prev" class="train-story-nav" type="button" aria-label="Previous train step">Prev</button>
+          <div class="train-story-dots" role="tablist" aria-label="Train storyline steps">
+            <button class="train-story-dot is-active" type="button" data-story-target="0" aria-label="Go to step 1"></button>
+            <button class="train-story-dot" type="button" data-story-target="1" aria-label="Go to step 2"></button>
+            <button class="train-story-dot" type="button" data-story-target="2" aria-label="Go to step 3"></button>
+            <button class="train-story-dot" type="button" data-story-target="3" aria-label="Go to step 4"></button>
+            <button class="train-story-dot" type="button" data-story-target="4" aria-label="Go to step 5"></button>
+            <button class="train-story-dot" type="button" data-story-target="5" aria-label="Go to step 6"></button>
+          </div>
+          <button id="train-story-next" class="train-story-nav" type="button" aria-label="Next train step">Next</button>
+        </div>
       </div>
 
       <article class="story-card reveal extra-story">

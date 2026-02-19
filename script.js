@@ -78,19 +78,31 @@ if (prefersReducedMotion) {
 
 const skeletonBlocks = Array.from(document.querySelectorAll("[data-skeleton]"));
 skeletonBlocks.forEach((block) => {
-  const img = block.querySelector("img");
-  if (!img) return;
-
-  const complete = img.complete && img.naturalWidth > 0;
-  if (complete) {
-    block.classList.remove("is-loading");
-    return;
-  }
+  const media = block.querySelector("video, img");
+  if (!media) return;
 
   block.classList.add("is-loading");
   const clear = () => block.classList.remove("is-loading");
-  img.addEventListener("load", clear, { once: true });
-  img.addEventListener("error", clear, { once: true });
+
+  if (media instanceof HTMLImageElement) {
+    const complete = media.complete && media.naturalWidth > 0;
+    if (complete) {
+      clear();
+      return;
+    }
+    media.addEventListener("load", clear, { once: true });
+    media.addEventListener("error", clear, { once: true });
+    return;
+  }
+
+  if (media instanceof HTMLVideoElement) {
+    if (media.readyState >= 2) {
+      clear();
+      return;
+    }
+    media.addEventListener("loadeddata", clear, { once: true });
+    media.addEventListener("error", clear, { once: true });
+  }
 });
 
 const scrollProgressFill = document.getElementById("scroll-progress-fill");
@@ -410,6 +422,145 @@ if (!prefersReducedMotion && parallaxImages.length) {
   window.addEventListener("scroll", onParallaxScroll, { passive: true });
   window.addEventListener("resize", onParallaxScroll);
   onParallaxScroll();
+}
+
+const trainStoryTrack = document.getElementById("train-story-track");
+const trainSlides = Array.from(document.querySelectorAll(".train-slide"));
+const trainStepCurrent = document.getElementById("train-step-current");
+const trainDots = Array.from(document.querySelectorAll(".train-story-dot"));
+const trainPrev = document.getElementById("train-story-prev");
+const trainNext = document.getElementById("train-story-next");
+
+let activeTrainStep = 0;
+
+function normalizeTrainStep(index) {
+  const max = Math.max(0, trainSlides.length - 1);
+  return Math.min(max, Math.max(0, index));
+}
+
+function setTrainStepState(index) {
+  const safeIndex = normalizeTrainStep(index);
+  activeTrainStep = safeIndex;
+
+  if (trainStepCurrent) {
+    trainStepCurrent.textContent = String(safeIndex + 1).padStart(2, "0");
+  }
+
+  trainDots.forEach((dot, dotIndex) => {
+    const isActive = dotIndex === safeIndex;
+    dot.classList.toggle("is-active", isActive);
+    dot.setAttribute("aria-selected", isActive ? "true" : "false");
+    if (isActive) dot.setAttribute("aria-current", "true");
+    else dot.removeAttribute("aria-current");
+  });
+
+  if (trainPrev) trainPrev.disabled = safeIndex === 0;
+  if (trainNext) trainNext.disabled = safeIndex === trainSlides.length - 1;
+}
+
+function scrollToTrainStep(index) {
+  const safeIndex = normalizeTrainStep(index);
+  const target = trainSlides[safeIndex];
+  if (!target) return;
+  setTrainStepState(safeIndex);
+  target.scrollIntoView({
+    behavior: smoothBehavior,
+    block: "nearest",
+    inline: "start"
+  });
+}
+
+function getNearestTrainStep() {
+  if (!trainStoryTrack || !trainSlides.length) return 0;
+  const offset = trainStoryTrack.scrollLeft;
+  let nearestIndex = 0;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+
+  trainSlides.forEach((slide, index) => {
+    const distance = Math.abs(slide.offsetLeft - offset);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestIndex = index;
+    }
+  });
+
+  return nearestIndex;
+}
+
+if (trainSlides.length) {
+  setTrainStepState(0);
+
+  trainDots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      const target = Number(dot.dataset.storyTarget || "0");
+      scrollToTrainStep(target);
+    });
+  });
+
+  trainPrev?.addEventListener("click", () => {
+    scrollToTrainStep(activeTrainStep - 1);
+  });
+
+  trainNext?.addEventListener("click", () => {
+    scrollToTrainStep(activeTrainStep + 1);
+  });
+
+  if (trainStoryTrack) {
+    let railTicking = false;
+    const updateFromScroll = () => {
+      setTrainStepState(getNearestTrainStep());
+      railTicking = false;
+    };
+
+    trainStoryTrack.addEventListener(
+      "scroll",
+      () => {
+        if (railTicking) return;
+        railTicking = true;
+        requestAnimationFrame(updateFromScroll);
+      },
+      { passive: true }
+    );
+
+    trainStoryTrack.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        scrollToTrainStep(activeTrainStep + 1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        scrollToTrainStep(activeTrainStep - 1);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      setTrainStepState(getNearestTrainStep());
+    });
+  }
+}
+
+const trainCompare = document.getElementById("train-compare");
+const trainCompareOverlay = document.getElementById("train-compare-overlay");
+const trainCompareDivider = document.getElementById("train-compare-divider");
+const trainCompareRange = document.getElementById("train-compare-range");
+
+function updateTrainCompare(rawValue) {
+  const value = Math.max(15, Math.min(85, rawValue));
+  const position = `${value}%`;
+  if (trainCompare) trainCompare.style.setProperty("--compare-position", position);
+  if (trainCompareOverlay) trainCompareOverlay.style.width = position;
+  if (trainCompareDivider) trainCompareDivider.style.left = position;
+}
+
+if (trainCompareRange) {
+  if (prefersReducedMotion) {
+    trainCompareRange.value = "50";
+    trainCompareRange.disabled = true;
+  }
+
+  updateTrainCompare(Number(trainCompareRange.value || "52"));
+  trainCompareRange.addEventListener("input", () => {
+    updateTrainCompare(Number(trainCompareRange.value || "52"));
+  });
 }
 
 const simPeople = document.getElementById("sim-people");
