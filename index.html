@@ -4,12 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Paper Stool | Space-Smart Urban Seating</title>
-  <meta name="description" content="Paper Stool is a foldable, portable, eco-friendly seating concept designed to unlock unused space in trains, events, restaurants, and homes." />
-  <meta property="og:title" content="Paper Stool | Space-Smart Urban Seating" />
-  <meta property="og:description" content="A story-driven product website showing how Paper Stool turns small spaces into comfortable seating zones." />
+  <meta name="description" content="Paper Stool pre-launch concept site: a foldable seating idea in testing for trains, events, restaurants, and compact homes." />
+  <link rel="canonical" href="https://abraheem2010.github.io/paper-stool-site/" />
+  <meta property="og:title" content="Paper Stool | Premium Pre-Launch Experience" />
+  <meta property="og:description" content="A premium pre-launch landing page for a foldable seating concept focused on space-smart comfort." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="assets/images/paper-stool-1200.jpg" />
-  <meta name="theme-color" content="#f6f1e8" />
+  <meta property="og:url" content="https://abraheem2010.github.io/paper-stool-site/" />
+  <meta property="og:image" content="https://abraheem2010.github.io/paper-stool-site/assets/images/paper-stool-1200.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Paper Stool | Premium Pre-Launch Experience" />
+  <meta name="twitter:description" content="Explore a foldable stool concept in testing, designed for cleaner mobility and better space usage." />
+  <meta name="twitter:image" content="https://abraheem2010.github.io/paper-stool-site/assets/images/paper-stool-1200.jpg" />
+  <meta id="theme-color-meta" name="theme-color" content="#f6f1e8" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151d1f" />
   <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="180x180" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,25 +26,31 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "Paper Stool",
-      "description": "Foldable, portable seating concept for trains, events, restaurants, and compact homes.",
-      "image": "assets/images/paper-stool-1200.jpg",
-      "brand": {
-        "@type": "Brand",
-        "name": "Paper Stool"
+      "@type": "CreativeWork",
+      "name": "Paper Stool Pre-Launch Website",
+      "headline": "Paper Stool | Space-Smart Urban Seating",
+      "description": "A course showcase website presenting a foldable seating concept in pre-launch testing.",
+      "url": "https://abraheem2010.github.io/paper-stool-site/",
+      "inLanguage": "en",
+      "image": "https://abraheem2010.github.io/paper-stool-site/assets/images/paper-stool-1200.jpg",
+      "creator": {
+        "@type": "Person",
+        "name": "Paper Stool Project Team"
       },
-      "category": "Portable Seating",
-      "material": "Kraft-based reinforced structure"
+      "about": [
+        "Portable seating concept",
+        "Urban mobility",
+        "Pre-launch product design"
+      ]
     }
   </script>
 </head>
-<body>
+<body id="top">
   <div class="bg-orb orb-a" aria-hidden="true"></div>
   <div class="bg-orb orb-b" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
   <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-fill"></span></div>
-  <a class="skip-link" href="#top">Skip to content</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Paper Stool home">
@@ -54,12 +67,21 @@
       <a href="#use-cases">Use Cases</a>
       <a href="#gallery">Gallery</a>
       <a href="#demo-video">Video</a>
+      <a href="#packs">Packs</a>
       <a href="#order">Reserve</a>
     </nav>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 4a1 1 0 0 1 1 1v1.2a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1Zm0 12.6a4.6 4.6 0 1 0 0-9.2 4.6 4.6 0 0 0 0 9.2Zm8-5.6a1 1 0 0 1 1 1 1 1 0 0 1-1 1h-1.2a1 1 0 1 1 0-2H20ZM5.2 12a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1 1 1 0 0 1 1-1h1.2Zm11.1 5.3a1 1 0 0 1 1.4 0l.9.9a1 1 0 1 1-1.4 1.4l-.9-.9a1 1 0 0 1 0-1.4ZM6.4 7.4a1 1 0 0 1 1.4 0l.9.9a1 1 0 0 1-1.4 1.4l-.9-.9a1 1 0 0 1 0-1.4Zm11.3 0a1 1 0 0 1 0 1.4l-.9.9a1 1 0 1 1-1.4-1.4l.9-.9a1 1 0 0 1 1.4 0ZM8.7 16.3a1 1 0 0 1 0 1.4l-.9.9a1 1 0 1 1-1.4-1.4l.9-.9a1 1 0 0 1 1.4 0Z" />
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14.7 2.2a1 1 0 0 1 .9 1.5 8.2 8.2 0 1 0 4.7 11.1 1 1 0 0 1 1.9.6A10.2 10.2 0 1 1 13.8 2.3a1 1 0 0 1 .9-.1Z" />
+      </svg>
+    </button>
     <a class="header-cta" href="#order">Reserve</a>
   </header>
 
-  <main id="top">
+  <main id="main-content" tabindex="-1">
     <section class="hero reveal">
       <div class="hero-copy">
         <p class="eyebrow">Space-Smart Concept</p>
@@ -75,50 +97,50 @@
         </div>
         <ul class="hero-metrics">
           <li>
-            <strong class="metric-value" data-count="120" data-suffix="kg">120kg</strong>
-            <span>Load capacity</span>
+            <strong class="metric-value count-up" data-count="120" data-start="92" data-suffix=" kg" data-decimals="0">120 kg</strong>
+            <span>Designed for (in testing)</span>
           </li>
           <li>
-            <strong class="metric-value" data-count="5" data-suffix=" sec">5 sec</strong>
-            <span>Bag to seat</span>
+            <strong class="metric-value count-up" data-count="2.5" data-start="1.6" data-suffix=" sec" data-prefix="~" data-decimals="1">~2.5 sec</strong>
+            <span>Opens in (estimated)</span>
           </li>
           <li>
-            <strong class="metric-value" data-count="3" data-suffix="x">3x</strong>
-            <span>More seating flexibility</span>
+            <strong class="metric-value count-up" data-count="1.2" data-start="0.9" data-suffix=" kg" data-prefix="~" data-decimals="1">~1.2 kg</strong>
+            <span>Carry weight target</span>
           </li>
         </ul>
       </div>
-      <div class="hero-visual" id="hero-tilt">
-        <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Real commute setup: opening Paper Stool from compact shape to seat-ready form" fetchpriority="high" decoding="async" />
+      <div class="hero-visual" id="hero-tilt" data-skeleton>
+        <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Real commute setup: opening Paper Stool from compact shape to seat-ready form" width="1200" height="1200" loading="eager" fetchpriority="high" decoding="async" />
       </div>
     </section>
 
     <section id="specs" class="section reveal">
       <div class="section-head">
         <p class="eyebrow">Quick Facts</p>
-        <h2>Real specs, clear pricing, and delivery terms</h2>
+        <h2>Target specs, early pricing direction, and delivery assumptions</h2>
       </div>
       <div class="spec-proof-grid">
         <article class="proof-card">
-          <h3>Product Specs</h3>
+          <h3>Current Testing Targets</h3>
           <ul class="proof-list">
-            <li><span>Load capacity</span><strong>Up to 120 kg</strong></li>
-            <li><span>Product weight</span><strong>Approx. 850 g</strong></li>
-            <li><span>Folded size</span><strong>32 x 18 x 6 cm</strong></li>
-            <li><span>Open size</span><strong>30 x 30 x 45 cm</strong></li>
-            <li><span>Material</span><strong>Reinforced kraft core</strong></li>
-            <li><span>Water resistance</span><strong>Light rain resistant</strong></li>
-            <li><span>Warranty</span><strong>30 days</strong></li>
+            <li><span>Load capacity goal</span><strong>Designed for up to 120 kg</strong></li>
+            <li><span>Target carry weight</span><strong>Approx. 1.2 kg</strong></li>
+            <li><span>Folded profile</span><strong>~32 x 18 x 6 cm</strong></li>
+            <li><span>Open profile</span><strong>~30 x 30 x 45 cm</strong></li>
+            <li><span>Material direction</span><strong>Reinforced kraft core</strong></li>
+            <li><span>Surface treatment</span><strong>Light splash resistance target</strong></li>
+            <li><span>Pilot warranty plan</span><strong>30 days (subject to launch terms)</strong></li>
           </ul>
         </article>
         <article class="proof-card pricing-card-proof">
-          <h3>Pricing & Shipping</h3>
-          <p class="proof-price">NIS 149 <span>per unit</span></p>
+          <h3>Early Access Pricing</h3>
+          <p class="proof-price">NIS 149 <span>target launch price</span></p>
           <ul class="proof-list">
-            <li><span>Shipping</span><strong>NIS 25 nationwide</strong></li>
-            <li><span>2+ units</span><strong>Free shipping option</strong></li>
-            <li><span>Dispatch window</span><strong>1-3 business days</strong></li>
-            <li><span>Payment</span><strong>Confirmed after call-back</strong></li>
+            <li><span>Shipping estimate</span><strong>NIS 25 nationwide</strong></li>
+            <li><span>2+ units</span><strong>Free shipping test offer</strong></li>
+            <li><span>Dispatch estimate</span><strong>1-3 business days</strong></li>
+            <li><span>Checkout status</span><strong>No payment at reservation stage</strong></li>
           </ul>
           <a class="btn btn-primary full" href="#order">Reserve</a>
         </article>
@@ -143,12 +165,12 @@
         <h2>Built to own the full screen and command attention</h2>
       </div>
       <div class="immersion-grid">
-        <figure class="immersion-main">
-          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Real-life final open form of Paper Stool ready for comfortable seating" loading="lazy" decoding="async" />
+        <figure class="immersion-main" data-skeleton>
+          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Real-life final open form of Paper Stool ready for comfortable seating" width="1200" height="1200" loading="lazy" decoding="async" />
           <figcaption>Real-world setup: compact form opens into a stable seat in seconds.</figcaption>
         </figure>
-        <figure class="immersion-side">
-          <img src="assets/images/paper-stool-1200.jpg" alt="Paper Stool in lifestyle setup with a clean premium look" loading="lazy" decoding="async" />
+        <figure class="immersion-side" data-skeleton>
+          <img src="assets/images/paper-stool-1200.jpg" alt="Paper Stool in lifestyle setup with a clean premium look" width="1200" height="1200" loading="lazy" decoding="async" />
           <figcaption>Minimal aesthetic that fits homes, cafes, events, and urban spaces.</figcaption>
         </figure>
         <article class="immersion-panel">
@@ -170,8 +192,8 @@
       </div>
 
       <article class="story-card reveal extra-story">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Step one: compact folded Paper Stool ready to be opened" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Step one: compact folded Paper Stool ready to be opened" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Frame 01</p>
@@ -188,8 +210,8 @@
       </article>
 
       <article class="story-card reveal extra-story">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Step two: Paper Stool unfolding into seating structure" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Step two: Paper Stool unfolding into seating structure" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Frame 02</p>
@@ -206,8 +228,8 @@
       </article>
 
       <article class="story-card reveal extra-story">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Step three: Paper Stool fully opened and stable" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Step three: Paper Stool fully opened and stable" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Frame 03</p>
@@ -224,8 +246,8 @@
       </article>
 
       <article class="story-card reveal">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Step one showing the compact folded stool ready to open" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Step one showing the compact folded stool ready to open" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Core 01</p>
@@ -242,8 +264,8 @@
       </article>
 
       <article class="story-card reveal">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Step two showing stool unfolding into shape" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Step two showing stool unfolding into shape" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Core 02</p>
@@ -260,8 +282,8 @@
       </article>
 
       <article class="story-card reveal">
-        <figure class="story-media">
-          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Step three showing final stable stool shape for sitting" loading="lazy" decoding="async" data-parallax />
+        <figure class="story-media" data-skeleton>
+          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Step three showing final stable stool shape for sitting" width="1200" height="1200" loading="lazy" decoding="async" data-parallax />
         </figure>
         <div class="story-copy">
           <p class="story-step">Core 03</p>
@@ -357,6 +379,16 @@
             </article>
           </div>
           <p id="sim-explainer" class="sim-explainer">Fixed benches: 8 seats | With Paper Stool: 19 seats</p>
+          <div class="seat-map" aria-live="polite">
+            <div class="seat-row">
+              <span class="seat-label">Baseline</span>
+              <div id="sim-map-static" class="seat-dots" role="img" aria-label="Baseline seat map"></div>
+            </div>
+            <div class="seat-row">
+              <span class="seat-label">With PaperStool</span>
+              <div id="sim-map-stool" class="seat-dots" role="img" aria-label="PaperStool seat map"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -461,22 +493,28 @@
       </div>
       <div class="impact-grid">
         <article class="impact-card">
-          <p class="impact-label">Seating Coverage</p>
-          <strong class="impact-value" data-count="42" data-suffix="%">42%</strong>
-          <p>Estimated increase when distributed stools complement fixed station benches.</p>
+          <p class="impact-label">Seating Flexibility</p>
+          <strong class="impact-value">
+            <span class="count-up" data-count="35" data-start="24" data-prefix="+" data-suffix="% " data-decimals="0">+35%</span>-<span class="count-up" data-count="60" data-start="42" data-suffix="% " data-decimals="0">60%</span>(est.)
+          </strong>
+          <p>Estimated increase in flexible seating when distributed stools complement fixed benches.</p>
         </article>
         <article class="impact-card">
           <p class="impact-label">Setup Speed</p>
-          <strong class="impact-value" data-count="2.4" data-suffix="x">2.4x</strong>
-          <p>Faster temporary seating deployment versus carrying traditional fold chairs.</p>
+          <strong class="impact-value">
+            <span class="count-up" data-count="2" data-start="1.2" data-decimals="0">2</span>-<span class="count-up" data-count="4" data-start="2.8" data-decimals="0">4</span>x (est.)
+          </strong>
+          <p>Estimated speed-up for temporary seating setup compared with traditional fold chairs.</p>
         </article>
         <article class="impact-card">
           <p class="impact-label">Storage Footprint</p>
-          <strong class="impact-value" data-count="68" data-suffix="%">68%</strong>
-          <p>Potential reduction in storage volume compared to standard compact stools.</p>
+          <strong class="impact-value">
+            <span class="count-up" data-count="50" data-start="36" data-prefix="-" data-suffix="% " data-decimals="0">-50%</span>-<span class="count-up" data-count="70" data-start="55" data-suffix="% " data-decimals="0">70%</span>(est.)
+          </strong>
+          <p>Estimated storage reduction potential versus standard compact stool footprints.</p>
         </article>
       </div>
-      <p class="section-note">Values above represent directional concept targets for pilot testing and refinement.</p>
+      <p class="section-note">All values are directional estimates for pre-launch testing and refinement.</p>
     </section>
 
     <section id="gallery" class="section reveal">
@@ -485,28 +523,28 @@
         <h2>Product details and lifestyle moments</h2>
       </div>
       <div class="gallery-grid">
-        <button class="gallery-item tall" type="button" data-full="assets/images/paper-stool-demo-1-1200.jpg" aria-label="Open image: product lifestyle shot">
-          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Paper Stool lifestyle shot" loading="lazy" decoding="async" />
+        <button class="gallery-item tall" type="button" data-skeleton data-full="assets/images/paper-stool-demo-1-1200.jpg" aria-label="Open image: product lifestyle shot">
+          <img src="assets/images/paper-stool-demo-1-1200.jpg" alt="Paper Stool lifestyle shot" width="1200" height="1200" loading="lazy" decoding="async" />
           <span>Hero product shot with soft studio texture</span>
         </button>
-        <button class="gallery-item" type="button" data-full="assets/images/paper-stool-demo-2-1200.jpg" aria-label="Open image: product detail view">
-          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Paper Stool detail view" loading="lazy" decoding="async" />
+        <button class="gallery-item" type="button" data-skeleton data-full="assets/images/paper-stool-demo-2-1200.jpg" aria-label="Open image: product detail view">
+          <img src="assets/images/paper-stool-demo-2-1200.jpg" alt="Paper Stool detail view" width="1200" height="1200" loading="lazy" decoding="async" />
           <span>Material and fold geometry detail</span>
         </button>
-        <button class="gallery-item wide" type="button" data-full="assets/images/paper-stool-demo-3-1200.jpg" aria-label="Open image: fully open stool form">
-          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Fully opened Paper Stool in real-life use context" loading="lazy" decoding="async" />
+        <button class="gallery-item wide" type="button" data-skeleton data-full="assets/images/paper-stool-demo-3-1200.jpg" aria-label="Open image: fully open stool form">
+          <img src="assets/images/paper-stool-demo-3-1200.jpg" alt="Fully opened Paper Stool in real-life use context" width="1200" height="1200" loading="lazy" decoding="async" />
           <span>Final open form that is ready for sitting in seconds</span>
         </button>
-        <button class="gallery-item" type="button" data-full="assets/images/paper-stool-1200.jpg" aria-label="Open image: lifestyle setup">
-          <img src="assets/images/paper-stool-1200.jpg" alt="Paper Stool lifestyle setup with premium minimal styling" loading="lazy" decoding="async" />
+        <button class="gallery-item" type="button" data-skeleton data-full="assets/images/paper-stool-1200.jpg" aria-label="Open image: lifestyle setup">
+          <img src="assets/images/paper-stool-1200.jpg" alt="Paper Stool lifestyle setup with premium minimal styling" width="1200" height="1200" loading="lazy" decoding="async" />
           <span>Lifestyle setup: compact furniture that still looks premium</span>
         </button>
-        <button class="gallery-item" type="button" data-full="assets/images/paper-stool-demo-5-800.jpg" aria-label="Open image: compact product hero">
-          <img src="assets/images/paper-stool-demo-5-800.jpg" alt="Compact Paper Stool in final form with tabletop view" loading="lazy" decoding="async" />
+        <button class="gallery-item" type="button" data-skeleton data-full="assets/images/paper-stool-demo-5-800.jpg" aria-label="Open image: compact product hero">
+          <img src="assets/images/paper-stool-demo-5-800.jpg" alt="Compact Paper Stool in final form with tabletop view" width="800" height="800" loading="lazy" decoding="async" />
           <span>Clean final form that fits homes, cafes, and waiting zones</span>
         </button>
-        <button class="gallery-item" type="button" data-full="assets/images/paper-stool-demo-1-800.jpg" aria-label="Open image: folded carry state">
-          <img src="assets/images/paper-stool-demo-1-800.jpg" alt="Folded Paper Stool carry state ready to open" loading="lazy" decoding="async" />
+        <button class="gallery-item" type="button" data-skeleton data-full="assets/images/paper-stool-demo-1-800.jpg" aria-label="Open image: folded carry state">
+          <img src="assets/images/paper-stool-demo-1-800.jpg" alt="Folded Paper Stool carry state ready to open" width="800" height="800" loading="lazy" decoding="async" />
           <span>Folded carry profile: easy to store in a backpack</span>
         </button>
       </div>
@@ -560,6 +598,46 @@
       <p class="section-note">Real-use footage: carry state, opening sequence, seating stability, and fold-back portability.</p>
     </section>
 
+    <section id="packs" class="section reveal">
+      <div class="section-head">
+        <p class="eyebrow">Pricing / Packs</p>
+        <h2>Choose your pre-launch reservation pack</h2>
+      </div>
+      <div class="packs-grid">
+        <article class="pack-card">
+          <p class="pack-name">Solo</p>
+          <h3>1 Unit</h3>
+          <p class="pack-price">NIS 149 <span>estimated</span></p>
+          <ul>
+            <li>For personal commute use</li>
+            <li>Compact carry-first setup</li>
+          </ul>
+          <button class="btn btn-primary full reserve-pack" type="button" data-pack="Solo" data-quantity="1">Reserve Early Access</button>
+        </article>
+        <article class="pack-card featured">
+          <p class="pack-name">Duo</p>
+          <h3>2 Units</h3>
+          <p class="pack-price">NIS 279 <span>estimated</span></p>
+          <ul>
+            <li>For couples or shared home use</li>
+            <li>Includes shipping test offer</li>
+          </ul>
+          <button class="btn btn-primary full reserve-pack" type="button" data-pack="Duo" data-quantity="2">Reserve Early Access</button>
+        </article>
+        <article class="pack-card">
+          <p class="pack-name">Host</p>
+          <h3>4 Units</h3>
+          <p class="pack-price">NIS 529 <span>estimated</span></p>
+          <ul>
+            <li>For events and hospitality pilots</li>
+            <li>Priority callback on availability</li>
+          </ul>
+          <button class="btn btn-primary full reserve-pack" type="button" data-pack="Host" data-quantity="4">Reserve Early Access</button>
+        </article>
+      </div>
+      <p class="section-note">No payment - reservation only. Final pricing and terms may adjust before launch.</p>
+    </section>
+
     <section id="order" class="order reveal">
       <div class="order-copy">
         <p class="eyebrow">Launch Access</p>
@@ -581,15 +659,23 @@
       <form id="order-form" class="order-form" novalidate>
         <label>
           Full Name
-          <input type="text" name="fullname" required minlength="2" />
+          <input type="text" name="fullname" required minlength="2" autocomplete="name" />
+          <span class="field-error" data-field-error="fullname"></span>
         </label>
         <label>
           Phone
-          <input type="tel" name="phone" required pattern="05[0-9]{8}" placeholder="05XXXXXXXX" />
+          <input type="tel" name="phone" required pattern="05[0-9]{8}" placeholder="05XXXXXXXX" autocomplete="tel-national" />
+          <span class="field-error" data-field-error="phone"></span>
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" required placeholder="name@example.com" autocomplete="email" />
+          <span class="field-error" data-field-error="email"></span>
         </label>
         <label>
           City
-          <input type="text" name="city" required />
+          <input type="text" name="city" required autocomplete="address-level2" />
+          <span class="field-error" data-field-error="city"></span>
         </label>
         <label>
           Quantity
@@ -601,7 +687,8 @@
             <option value="5">5</option>
           </select>
         </label>
-        <button type="submit" class="btn btn-primary full">Reserve</button>
+        <input type="hidden" name="pack" id="selected-pack" value="" />
+        <button type="submit" id="reserve-submit" class="btn btn-primary full">Reserve Early Access</button>
         <p class="form-policy">By sending this form, you agree to be contacted only for this reservation request.</p>
         <p id="form-message" class="form-message" aria-live="polite"></p>
       </form>
@@ -610,6 +697,7 @@
 
   <footer class="site-footer">
     <p>Paper Stool | Portable comfort for smart spaces</p>
+    <p class="site-footnote">Pre-launch prototype - specs may change.</p>
   </footer>
 
   <div class="lightbox" id="lightbox" aria-hidden="true">
@@ -621,6 +709,8 @@
   </div>
 
   <button id="to-top" class="to-top" type="button" aria-label="Back to top">Top</button>
+  <a id="mobile-sticky-cta" class="mobile-sticky-cta" href="#order" aria-label="Reserve early access">Reserve</a>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script src="script.js"></script>
 </body>
