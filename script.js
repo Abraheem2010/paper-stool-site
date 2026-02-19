@@ -444,8 +444,17 @@ const trainPrev = document.getElementById("train-story-prev");
 const trainNext = document.getElementById("train-story-next");
 
 let activeTrainStep = 0;
-let touchStartX = null;
-let touchStartY = null;
+let trainSnapTimer = null;
+let trainInertiaFrame = null;
+let draggingWithMouse = false;
+let dragMoved = false;
+let dragPointerId = null;
+let dragStartX = 0;
+let dragStartScrollLeft = 0;
+let dragLastX = 0;
+let dragLastTime = 0;
+let dragVelocity = 0;
+let suppressMediaClick = false;
 
 function normalizeTrainStep(index) {
   const max = Math.max(0, trainSlides.length - 1);
@@ -459,19 +468,80 @@ function focusTrainSlideHeading(index) {
   heading.focus({ preventScroll: true });
 }
 
-function syncTrainTrackHeight(index) {
-  if (!trainStoryTrack) return;
-  const slide = trainSlides[index];
-  if (!(slide instanceof HTMLElement)) return;
+function getNearestTrainStep() {
+  if (!trainStoryTrack || !trainSlides.length) return 0;
 
-  const setHeight = () => {
-    trainStoryTrack.style.height = `${slide.offsetHeight}px`;
+  const viewportCenter = trainStoryTrack.scrollLeft + trainStoryTrack.clientWidth / 2;
+  let nearestIndex = 0;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+
+  trainSlides.forEach((slide, index) => {
+    const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+    const distance = Math.abs(slideCenter - viewportCenter);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestIndex = index;
+    }
+  });
+
+  return nearestIndex;
+}
+
+function stopTrainInertia() {
+  if (!trainInertiaFrame) return;
+  cancelAnimationFrame(trainInertiaFrame);
+  trainInertiaFrame = null;
+}
+
+function scheduleTrainSnap() {
+  if (trainSnapTimer) {
+    clearTimeout(trainSnapTimer);
+  }
+
+  trainSnapTimer = window.setTimeout(() => {
+    if (draggingWithMouse || trainInertiaFrame) return;
+    const nearest = getNearestTrainStep();
+    scrollTrainToStep(nearest, {
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      moveFocus: false
+    });
+  }, prefersReducedMotion ? 0 : 130);
+}
+
+function startTrainInertia(initialVelocity) {
+  if (!trainStoryTrack || prefersReducedMotion) {
+    scheduleTrainSnap();
+    return;
+  }
+
+  stopTrainInertia();
+  let velocity = initialVelocity * 18;
+  if (Math.abs(velocity) < 0.2) {
+    scheduleTrainSnap();
+    return;
+  }
+
+  const friction = 0.92;
+  const minVelocity = 0.2;
+
+  const frame = () => {
+    if (!trainStoryTrack) return;
+    trainStoryTrack.scrollLeft += velocity;
+    velocity *= friction;
+
+    const maxScroll = Math.max(0, trainStoryTrack.scrollWidth - trainStoryTrack.clientWidth);
+    const reachedEdge = trainStoryTrack.scrollLeft <= 0 || trainStoryTrack.scrollLeft >= maxScroll;
+
+    if (Math.abs(velocity) < minVelocity || reachedEdge) {
+      stopTrainInertia();
+      scheduleTrainSnap();
+      return;
+    }
+
+    trainInertiaFrame = requestAnimationFrame(frame);
   };
 
-  setHeight();
-  if (!prefersReducedMotion) {
-    requestAnimationFrame(setHeight);
-  }
+  trainInertiaFrame = requestAnimationFrame(frame);
 }
 
 function setTrainStepState(index, options = {}) {
@@ -490,11 +560,10 @@ function setTrainStepState(index, options = {}) {
   trainSlides.forEach((slide, slideIndex) => {
     const isActive = slideIndex === safeIndex;
     slide.classList.toggle("is-active", isActive);
-    slide.setAttribute("aria-hidden", isActive ? "false" : "true");
-    if ("inert" in slide) slide.inert = !isActive;
+    slide.setAttribute("aria-hidden", "false");
+    slide.setAttribute("aria-current", isActive ? "true" : "false");
+    if ("inert" in slide) slide.inert = false;
   });
-
-  syncTrainTrackHeight(safeIndex);
 
   trainDots.forEach((dot, dotIndex) => {
     const isActive = dotIndex === safeIndex;
@@ -505,8 +574,8 @@ function setTrainStepState(index, options = {}) {
     else dot.removeAttribute("aria-current");
   });
 
-  if (trainPrev) trainPrev.disabled = false;
-  if (trainNext) trainNext.disabled = false;
+  if (trainPrev) trainPrev.disabled = safeIndex === 0;
+  if (trainNext) trainNext.disabled = safeIndex === trainSlides.length - 1;
 
   if (moveFocus) {
     window.setTimeout(() => {
@@ -515,31 +584,40 @@ function setTrainStepState(index, options = {}) {
   }
 }
 
-function goToTrainStep(index, options = {}) {
+function scrollTrainToStep(index, options = {}) {
   const { moveFocus = false } = options;
+  const behavior = options.behavior || (prefersReducedMotion ? "auto" : "smooth");
   const safeIndex = normalizeTrainStep(index);
+  const slide = trainSlides[safeIndex];
+  if (!(slide instanceof HTMLElement)) return;
+
+  slide.scrollIntoView({
+    behavior,
+    block: "nearest",
+    inline: "center"
+  });
+
   setTrainStepState(safeIndex, { moveFocus });
 }
 
 function goNextTrainStep(options = {}) {
-  if (!trainSlides.length) return;
-  const targetIndex = (activeTrainStep + 1) % trainSlides.length;
-  goToTrainStep(targetIndex, options);
+  scrollTrainToStep(activeTrainStep + 1, options);
 }
 
 function goPrevTrainStep(options = {}) {
-  if (!trainSlides.length) return;
-  const targetIndex = (activeTrainStep - 1 + trainSlides.length) % trainSlides.length;
-  goToTrainStep(targetIndex, options);
+  scrollTrainToStep(activeTrainStep - 1, options);
 }
 
 if (trainSlides.length) {
   setTrainStepState(0);
+  requestAnimationFrame(() => {
+    scrollTrainToStep(0, { behavior: "auto" });
+  });
 
   trainDots.forEach((dot) => {
     dot.addEventListener("click", () => {
       const target = Number(dot.dataset.storyTarget || "0");
-      goToTrainStep(target, { moveFocus: true });
+      scrollTrainToStep(target, { moveFocus: true });
     });
   });
 
@@ -554,16 +632,11 @@ if (trainSlides.length) {
   trainSlides.forEach((slide) => {
     const media = slide.querySelector(".train-slide-media, .train-compare-wrap");
     if (!(media instanceof HTMLElement)) return;
-    media.addEventListener("click", (event) => {
-      const target = event.target;
-      if (target instanceof HTMLElement) {
-        if (target.closest("#train-compare, #train-compare-range")) return;
-        const interactive = target.closest(
-          'button, a, input, select, textarea, label, [role="button"], [contenteditable="true"]'
-        );
-        if (interactive) return;
+    media.addEventListener("click", () => {
+      if (suppressMediaClick) return;
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        goNextTrainStep({ moveFocus: true });
       }
-      goNextTrainStep({ moveFocus: true });
     });
   });
 
@@ -579,6 +652,74 @@ if (trainSlides.length) {
 
   trainStoryTrack?.addEventListener("keydown", onTrainArrowKeydown);
   trainStoryline?.addEventListener("keydown", onTrainArrowKeydown);
+
+  trainStoryTrack?.addEventListener(
+    "scroll",
+    () => {
+      const nearest = getNearestTrainStep();
+      if (nearest !== activeTrainStep) {
+        setTrainStepState(nearest);
+      }
+      scheduleTrainSnap();
+    },
+    { passive: true }
+  );
+
+  trainStoryTrack?.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0 || !trainStoryTrack) return;
+    stopTrainInertia();
+    draggingWithMouse = true;
+    dragMoved = false;
+    dragPointerId = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartScrollLeft = trainStoryTrack.scrollLeft;
+    dragLastX = event.clientX;
+    dragLastTime = performance.now();
+    dragVelocity = 0;
+    trainStoryTrack.classList.add("is-dragging");
+    trainStoryTrack.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  });
+
+  trainStoryTrack?.addEventListener("pointermove", (event) => {
+    if (!draggingWithMouse || event.pointerId !== dragPointerId || !trainStoryTrack) return;
+
+    const now = performance.now();
+    const dx = event.clientX - dragStartX;
+    if (Math.abs(dx) > 3) dragMoved = true;
+
+    trainStoryTrack.scrollLeft = dragStartScrollLeft - dx;
+
+    const dt = Math.max(1, now - dragLastTime);
+    const instantVelocity = (dragLastX - event.clientX) / dt;
+    dragVelocity = dragVelocity * 0.75 + instantVelocity * 0.25;
+
+    dragLastX = event.clientX;
+    dragLastTime = now;
+  });
+
+  const finishPointerDrag = (event) => {
+    if (!draggingWithMouse || event.pointerId !== dragPointerId || !trainStoryTrack) return;
+
+    draggingWithMouse = false;
+    trainStoryTrack.classList.remove("is-dragging");
+    trainStoryTrack.releasePointerCapture?.(event.pointerId);
+    dragPointerId = null;
+
+    if (dragMoved) {
+      suppressMediaClick = true;
+      window.setTimeout(() => {
+        suppressMediaClick = false;
+      }, 180);
+      startTrainInertia(dragVelocity);
+      return;
+    }
+
+    scheduleTrainSnap();
+  };
+
+  trainStoryTrack?.addEventListener("pointerup", finishPointerDrag);
+  trainStoryTrack?.addEventListener("pointercancel", finishPointerDrag);
 
   const isEditableTarget = (target) => {
     if (!(target instanceof HTMLElement)) return false;
@@ -600,35 +741,9 @@ if (trainSlides.length) {
     onTrainArrowKeydown(event);
   });
 
-  trainStoryTrack?.addEventListener(
-    "touchstart",
-    (event) => {
-      const touch = event.touches[0];
-      touchStartX = touch?.clientX ?? null;
-      touchStartY = touch?.clientY ?? null;
-    },
-    { passive: true }
-  );
-
-  trainStoryTrack?.addEventListener(
-    "touchend",
-    (event) => {
-      if (touchStartX === null || touchStartY === null) return;
-      const touch = event.changedTouches[0];
-      const dx = (touch?.clientX ?? touchStartX) - touchStartX;
-      const dy = (touch?.clientY ?? touchStartY) - touchStartY;
-      touchStartX = null;
-      touchStartY = null;
-
-      if (Math.abs(dx) < 44 || Math.abs(dx) < Math.abs(dy)) return;
-      if (dx < 0) goNextTrainStep({ moveFocus: true });
-      else goPrevTrainStep({ moveFocus: true });
-    },
-    { passive: true }
-  );
-
   window.addEventListener("resize", () => {
-    syncTrainTrackHeight(activeTrainStep);
+    stopTrainInertia();
+    scrollTrainToStep(getNearestTrainStep(), { behavior: "auto" });
   });
 }
 
