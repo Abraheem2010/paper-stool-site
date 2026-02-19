@@ -444,7 +444,9 @@ const trainPrev = document.getElementById("train-story-prev");
 const trainNext = document.getElementById("train-story-next");
 
 let activeTrainStep = 0;
-let trainSnapTimer = null;
+let snapTimer = null;
+let isWheeling = false;
+let wheelTimer = null;
 let draggingWithMouse = false;
 let dragMoved = false;
 let dragPointerId = null;
@@ -452,6 +454,7 @@ let dragStartX = 0;
 let dragStartScrollLeft = 0;
 let suppressMediaClick = false;
 const mouseDragThreshold = 7;
+const trainSnapDelay = prefersReducedMotion ? 0 : 450;
 
 function normalizeTrainStep(index) {
   const max = Math.max(0, trainSlides.length - 1);
@@ -509,23 +512,36 @@ function getTrainStepOffset(index) {
   return Math.max(0, Math.min(maxScroll, centeredOffset));
 }
 
-function snapTrainToNearest(options = {}) {
+function updateTrackSnapState() {
+  if (!trainStoryTrack) return;
+  trainStoryTrack.classList.toggle("no-snap", isWheeling || draggingWithMouse);
+}
+
+function snapTrainToNearestSmooth(options = {}) {
+  if (!trainStoryTrack) return;
   const nearest = getNearestTrainStep();
-  scrollTrainToStep(nearest, options);
+  const targetLeft = getTrainStepOffset(nearest);
+  const currentLeft = trainStoryTrack.scrollLeft;
+  const behavior = options.behavior || (prefersReducedMotion ? "auto" : "smooth");
+
+  if (Math.abs(currentLeft - targetLeft) > 1.5) {
+    trainStoryTrack.scrollTo({ left: targetLeft, behavior });
+  }
+  setTrainStepState(nearest, { moveFocus: Boolean(options.moveFocus) });
 }
 
 function scheduleTrainSnap() {
-  if (trainSnapTimer) {
-    clearTimeout(trainSnapTimer);
+  if (snapTimer) {
+    clearTimeout(snapTimer);
   }
 
-  trainSnapTimer = window.setTimeout(() => {
-    if (draggingWithMouse) return;
-    snapTrainToNearest({
+  snapTimer = window.setTimeout(() => {
+    if (draggingWithMouse || isWheeling) return;
+    snapTrainToNearestSmooth({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       moveFocus: false
     });
-  }, prefersReducedMotion ? 0 : 160);
+  }, trainSnapDelay);
 }
 
 function setTrainStepState(index, options = {}) {
@@ -654,8 +670,42 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener(
     "scroll",
     () => {
-      if (draggingWithMouse) return;
+      if (isWheeling || draggingWithMouse) return;
       scheduleTrainSnap();
+    },
+    { passive: true }
+  );
+
+  trainStoryTrack?.addEventListener(
+    "wheel",
+    (event) => {
+      if (!trainStoryTrack) return;
+      if (isCompareInteractionTarget(event.target)) return;
+
+      isWheeling = true;
+      updateTrackSnapState();
+
+      if (snapTimer) {
+        clearTimeout(snapTimer);
+        snapTimer = null;
+      }
+
+      if (wheelTimer) {
+        clearTimeout(wheelTimer);
+      }
+
+      wheelTimer = window.setTimeout(() => {
+        isWheeling = false;
+        updateTrackSnapState();
+        if (draggingWithMouse) {
+          scheduleTrainSnap();
+          return;
+        }
+        snapTrainToNearestSmooth({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          moveFocus: false
+        });
+      }, trainSnapDelay);
     },
     { passive: true }
   );
@@ -674,7 +724,13 @@ if (trainSlides.length) {
     dragStartX = event.clientX;
     dragStartScrollLeft = trainStoryTrack.scrollLeft;
     suppressMediaClick = false;
+    if (wheelTimer) {
+      clearTimeout(wheelTimer);
+      wheelTimer = null;
+    }
+    isWheeling = false;
     trainStoryTrack.classList.add("is-dragging");
+    updateTrackSnapState();
     trainStoryTrack.setPointerCapture?.(event.pointerId);
     event.preventDefault();
   });
@@ -696,6 +752,7 @@ if (trainSlides.length) {
 
     draggingWithMouse = false;
     trainStoryTrack.classList.remove("is-dragging");
+    updateTrackSnapState();
     trainStoryTrack.releasePointerCapture?.(event.pointerId);
     dragPointerId = null;
 
@@ -703,7 +760,7 @@ if (trainSlides.length) {
       window.setTimeout(() => {
         suppressMediaClick = false;
       }, 240);
-      snapTrainToNearest({
+      snapTrainToNearestSmooth({
         behavior: prefersReducedMotion ? "auto" : "smooth",
         moveFocus: false
       });
@@ -722,6 +779,7 @@ if (trainSlides.length) {
     if (!draggingWithMouse || !trainStoryTrack) return;
     draggingWithMouse = false;
     trainStoryTrack.classList.remove("is-dragging");
+    updateTrackSnapState();
     dragPointerId = null;
     scheduleTrainSnap();
   });

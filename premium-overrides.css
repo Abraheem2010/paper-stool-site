@@ -644,6 +644,11 @@ main {
   cursor: grabbing;
 }
 
+#story .train-story-track.no-snap {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
 #story .train-story-track.is-dragging,
 #story .train-story-track.is-dragging * {
   user-select: none !important;
@@ -966,6 +971,12 @@ main {
   scroll-snap-type: none;
   scroll-behavior: auto;
   cursor: grabbing;
+}
+
+.story-track.no-snap,
+#story .train-story-track.no-snap {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
 }
 
 .story-track.is-dragging *,
