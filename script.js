@@ -450,9 +450,6 @@ let dragMoved = false;
 let dragPointerId = null;
 let dragStartX = 0;
 let dragStartScrollLeft = 0;
-let dragLastX = 0;
-let dragLastTime = 0;
-let dragVelocity = 0;
 let suppressMediaClick = false;
 
 function normalizeTrainStep(index) {
@@ -491,6 +488,22 @@ function getNearestTrainStep() {
   return nearestIndex;
 }
 
+function getTrainStepOffset(index) {
+  if (!trainStoryTrack || !trainSlides.length) return 0;
+  const safeIndex = normalizeTrainStep(index);
+  const slide = trainSlides[safeIndex];
+  if (!(slide instanceof HTMLElement)) return 0;
+
+  const centeredOffset = slide.offsetLeft - (trainStoryTrack.clientWidth - slide.offsetWidth) / 2;
+  const maxScroll = Math.max(0, trainStoryTrack.scrollWidth - trainStoryTrack.clientWidth);
+  return Math.max(0, Math.min(maxScroll, centeredOffset));
+}
+
+function snapTrainToNearest(options = {}) {
+  const nearest = getNearestTrainStep();
+  scrollTrainToStep(nearest, options);
+}
+
 function scheduleTrainSnap() {
   if (trainSnapTimer) {
     clearTimeout(trainSnapTimer);
@@ -498,12 +511,11 @@ function scheduleTrainSnap() {
 
   trainSnapTimer = window.setTimeout(() => {
     if (draggingWithMouse) return;
-    const nearest = getNearestTrainStep();
-    scrollTrainToStep(nearest, {
+    snapTrainToNearest({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       moveFocus: false
     });
-  }, prefersReducedMotion ? 0 : 130);
+  }, prefersReducedMotion ? 0 : 160);
 }
 
 function setTrainStepState(index, options = {}) {
@@ -551,12 +563,11 @@ function scrollTrainToStep(index, options = {}) {
   const behavior = options.behavior || (prefersReducedMotion ? "auto" : "smooth");
   const safeIndex = normalizeTrainStep(index);
   const slide = trainSlides[safeIndex];
-  if (!(slide instanceof HTMLElement)) return;
+  if (!(slide instanceof HTMLElement) || !trainStoryTrack) return;
 
-  slide.scrollIntoView({
-    behavior,
-    block: "nearest",
-    inline: "center"
+  trainStoryTrack.scrollTo({
+    left: getTrainStepOffset(safeIndex),
+    behavior
   });
 
   setTrainStepState(safeIndex, { moveFocus });
@@ -571,6 +582,12 @@ function goPrevTrainStep(options = {}) {
 }
 
 if (trainSlides.length) {
+  trainSlides.forEach((slide) => {
+    slide.querySelectorAll("img").forEach((img) => {
+      img.setAttribute("draggable", "false");
+    });
+  });
+
   setTrainStepState(0);
   requestAnimationFrame(() => {
     scrollTrainToStep(0, { behavior: "auto" });
@@ -636,6 +653,7 @@ if (trainSlides.length) {
       if (nearest !== activeTrainStep) {
         setTrainStepState(nearest);
       }
+      if (draggingWithMouse) return;
       scheduleTrainSnap();
     },
     { passive: true }
@@ -648,9 +666,6 @@ if (trainSlides.length) {
     dragPointerId = event.pointerId;
     dragStartX = event.clientX;
     dragStartScrollLeft = trainStoryTrack.scrollLeft;
-    dragLastX = event.clientX;
-    dragLastTime = performance.now();
-    dragVelocity = 0;
     trainStoryTrack.classList.add("is-dragging");
     trainStoryTrack.setPointerCapture?.(event.pointerId);
     event.preventDefault();
@@ -659,18 +674,10 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener("pointermove", (event) => {
     if (!draggingWithMouse || event.pointerId !== dragPointerId || !trainStoryTrack) return;
 
-    const now = performance.now();
     const dx = event.clientX - dragStartX;
-    if (Math.abs(dx) > 3) dragMoved = true;
+    if (Math.abs(dx) > 2) dragMoved = true;
 
     trainStoryTrack.scrollLeft = dragStartScrollLeft - dx;
-
-    const dt = Math.max(1, now - dragLastTime);
-    const instantVelocity = (dragLastX - event.clientX) / dt;
-    dragVelocity = dragVelocity * 0.75 + instantVelocity * 0.25;
-
-    dragLastX = event.clientX;
-    dragLastTime = now;
   });
 
   const finishPointerDrag = (event) => {
@@ -686,18 +693,7 @@ if (trainSlides.length) {
       window.setTimeout(() => {
         suppressMediaClick = false;
       }, 180);
-      const dragDelta = event.clientX - dragStartX;
-      const swipeThreshold = Math.max(40, trainStoryTrack.clientWidth * 0.06);
-      const velocityThreshold = 0.3;
-      let targetIndex = getNearestTrainStep();
-
-      if (dragDelta <= -swipeThreshold || dragVelocity > velocityThreshold) {
-        targetIndex = loopTrainStep(targetIndex + 1);
-      } else if (dragDelta >= swipeThreshold || dragVelocity < -velocityThreshold) {
-        targetIndex = loopTrainStep(targetIndex - 1);
-      }
-
-      scrollTrainToStep(targetIndex, {
+      snapTrainToNearest({
         behavior: prefersReducedMotion ? "auto" : "smooth",
         moveFocus: false
       });

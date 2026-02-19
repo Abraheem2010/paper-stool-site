@@ -544,7 +544,7 @@ main {
   --story-media-ratio: 1 / 1.05;
   --story-media-max-height: min(60svh, 440px);
   --story-panel-width: min(var(--container), calc(100% - 2rem));
-  --story-track-pad: max(1rem, calc((100vw - var(--story-slide-width)) / 2));
+  --story-side-pad: max(0px, calc((100vw - var(--story-slide-width)) / 2));
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -613,13 +613,22 @@ main {
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
+  scroll-padding-left: var(--story-side-pad);
+  scroll-padding-right: var(--story-side-pad);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding-inline: var(--story-track-pad);
+  overscroll-behavior-x: contain;
+  padding-inline: 0;
   padding-block: 0.3rem 0.86rem;
   scrollbar-width: none;
   cursor: grab;
+}
+
+#story .train-story-track::before,
+#story .train-story-track::after {
+  content: "";
+  flex: 0 0 var(--story-side-pad);
 }
 
 #story .train-story-track::-webkit-scrollbar {
@@ -627,8 +636,14 @@ main {
 }
 
 #story .train-story-track.is-dragging {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
   cursor: grabbing;
-  user-select: none;
+}
+
+#story .train-story-track.is-dragging,
+#story .train-story-track.is-dragging * {
+  user-select: none !important;
 }
 
 #story .train-slide {
