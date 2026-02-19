@@ -604,9 +604,15 @@ if (trainSlides.length) {
         );
         if (interactive) return;
       }
-      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        goNextTrainStep({ moveFocus: true });
+      if (event instanceof MouseEvent) {
+        const rect = media.getBoundingClientRect();
+        const localX = event.clientX - rect.left;
+        if (localX < rect.width * 0.36) {
+          goPrevTrainStep({ moveFocus: true });
+          return;
+        }
       }
+      goNextTrainStep({ moveFocus: true });
     });
   });
 
