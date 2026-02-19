@@ -448,13 +448,27 @@ function focusTrainSlideHeading(index) {
   heading.focus({ preventScroll: true });
 }
 
+function syncTrainTrackHeight(index) {
+  if (!trainStoryTrack) return;
+  const slide = trainSlides[index];
+  if (!(slide instanceof HTMLElement)) return;
+
+  const setHeight = () => {
+    trainStoryTrack.style.height = `${slide.offsetHeight}px`;
+  };
+
+  setHeight();
+  if (!prefersReducedMotion) {
+    requestAnimationFrame(setHeight);
+  }
+}
+
 function setTrainStepState(index, options = {}) {
   const { moveFocus = false } = options;
   const safeIndex = normalizeTrainStep(index);
   activeTrainStep = safeIndex;
 
   if (trainStoryTrack) {
-    trainStoryTrack.style.transform = `translate3d(-${safeIndex * 100}%, 0, 0)`;
     trainStoryTrack.setAttribute("aria-label", `Train storyline carousel, step ${safeIndex + 1} of ${trainSlides.length}`);
   }
 
@@ -468,6 +482,8 @@ function setTrainStepState(index, options = {}) {
     slide.setAttribute("aria-hidden", isActive ? "false" : "true");
     if ("inert" in slide) slide.inert = !isActive;
   });
+
+  syncTrainTrackHeight(safeIndex);
 
   trainDots.forEach((dot, dotIndex) => {
     const isActive = dotIndex === safeIndex;
@@ -567,6 +583,10 @@ if (trainSlides.length) {
     },
     { passive: true }
   );
+
+  window.addEventListener("resize", () => {
+    syncTrainTrackHeight(activeTrainStep);
+  });
 }
 
 const trainCompare = document.getElementById("train-compare");

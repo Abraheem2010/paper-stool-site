@@ -3147,3 +3147,39 @@ html[data-theme="dark"] .train-compare {
     transition: none !important;
   }
 }
+
+/* Train slideshow stability fix: always show one active slide */
+.train-story-track {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: auto;
+  transition: height 360ms ease;
+  touch-action: pan-y;
+}
+
+.train-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  min-height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(20px, 0, 0);
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+
+.train-slide.is-active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-story-track,
+  .train-slide {
+    transition: none !important;
+  }
+}
