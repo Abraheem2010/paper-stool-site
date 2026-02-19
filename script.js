@@ -654,10 +654,6 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener(
     "scroll",
     () => {
-      const nearest = getNearestTrainStep();
-      if (nearest !== activeTrainStep) {
-        setTrainStepState(nearest);
-      }
       if (draggingWithMouse) return;
       scheduleTrainSnap();
     },
