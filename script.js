@@ -446,9 +446,11 @@ const trainNext = document.getElementById("train-story-next");
 let activeTrainStep = 0;
 let snapTimer = null;
 let isWheeling = false;
-let wheelTimer = null;
 let isProgrammaticScroll = false;
 let programmaticTimer = null;
+let settleRaf = null;
+let settleLastLeft = 0;
+let settleStableFrames = 0;
 let draggingWithMouse = false;
 let dragMoved = false;
 let dragPointerId = null;
@@ -544,6 +546,57 @@ function armProgrammaticScrollGuard(duration = 500) {
     isProgrammaticScroll = false;
     updateTrackSnapState();
   }, duration);
+}
+
+function stopSettleWatcher() {
+  if (settleRaf) cancelAnimationFrame(settleRaf);
+  settleRaf = null;
+  settleStableFrames = 0;
+}
+
+function ensureSettleWatcherRunning() {
+  if (!trainStoryTrack) return;
+  if (settleRaf) return;
+
+  settleLastLeft = trainStoryTrack.scrollLeft;
+  settleStableFrames = 0;
+
+  const tick = () => {
+    if (!trainStoryTrack) {
+      stopSettleWatcher();
+      return;
+    }
+
+    if (draggingWithMouse || isProgrammaticScroll) {
+      stopSettleWatcher();
+      return;
+    }
+
+    const nowLeft = trainStoryTrack.scrollLeft;
+
+    if (Math.abs(nowLeft - settleLastLeft) < 0.5) {
+      settleStableFrames += 1;
+    } else {
+      settleStableFrames = 0;
+    }
+
+    settleLastLeft = nowLeft;
+
+    if (settleStableFrames >= 10) {
+      isWheeling = false;
+      updateTrackSnapState();
+      stopSettleWatcher();
+      snapTrainToNearestSmooth({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        moveFocus: false
+      });
+      return;
+    }
+
+    settleRaf = requestAnimationFrame(tick);
+  };
+
+  settleRaf = requestAnimationFrame(tick);
 }
 
 function snapTrainToNearestSmooth(options = {}) {
@@ -705,7 +758,11 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener(
     "scroll",
     () => {
-      if (isWheeling || draggingWithMouse || isProgrammaticScroll) return;
+      if (draggingWithMouse || isProgrammaticScroll) return;
+      if (isWheeling) {
+        ensureSettleWatcherRunning();
+        return;
+      }
       scheduleTrainSnap();
     },
     { passive: true }
@@ -720,6 +777,7 @@ if (trainSlides.length) {
       clearProgrammaticScrollGuard();
       isWheeling = true;
       updateTrackSnapState();
+      stopSettleWatcher();
 
       if (snapTimer) {
         clearTimeout(snapTimer);
@@ -733,22 +791,7 @@ if (trainSlides.length) {
         if (event.cancelable) event.preventDefault();
       }
 
-      if (wheelTimer) {
-        clearTimeout(wheelTimer);
-      }
-
-      wheelTimer = window.setTimeout(() => {
-        isWheeling = false;
-        updateTrackSnapState();
-        if (draggingWithMouse) {
-          scheduleTrainSnap();
-          return;
-        }
-        snapTrainToNearestSmooth({
-          behavior: prefersReducedMotion ? "auto" : "smooth",
-          moveFocus: false
-        });
-      }, trainSnapDelay);
+      ensureSettleWatcherRunning();
     },
     { passive: false }
   );
@@ -767,10 +810,7 @@ if (trainSlides.length) {
     dragStartX = event.clientX;
     dragStartScrollLeft = trainStoryTrack.scrollLeft;
     suppressMediaClick = false;
-    if (wheelTimer) {
-      clearTimeout(wheelTimer);
-      wheelTimer = null;
-    }
+    stopSettleWatcher();
     isWheeling = false;
     clearProgrammaticScrollGuard();
     trainStoryTrack.classList.add("is-dragging");
@@ -824,6 +864,7 @@ if (trainSlides.length) {
     draggingWithMouse = false;
     trainStoryTrack.classList.remove("is-dragging");
     updateTrackSnapState();
+    stopSettleWatcher();
     dragPointerId = null;
     scheduleTrainSnap();
   });
@@ -857,6 +898,7 @@ if (trainSlides.length) {
   });
 
   window.addEventListener("resize", () => {
+    stopSettleWatcher();
     scrollTrainToStep(getNearestTrainStep(), { behavior: "auto" });
   });
 }
