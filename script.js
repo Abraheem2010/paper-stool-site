@@ -460,6 +460,11 @@ function normalizeTrainStep(index) {
   return Math.min(max, Math.max(0, index));
 }
 
+function loopTrainStep(index) {
+  if (!trainSlides.length) return 0;
+  return (index + trainSlides.length) % trainSlides.length;
+}
+
 function focusTrainSlideHeading(index) {
   const heading = trainSlides[index]?.querySelector(".train-slide-copy h3");
   if (!(heading instanceof HTMLElement)) return;
@@ -531,8 +536,8 @@ function setTrainStepState(index, options = {}) {
     else dot.removeAttribute("aria-current");
   });
 
-  if (trainPrev) trainPrev.disabled = safeIndex === 0;
-  if (trainNext) trainNext.disabled = safeIndex === trainSlides.length - 1;
+  if (trainPrev) trainPrev.disabled = false;
+  if (trainNext) trainNext.disabled = false;
 
   if (moveFocus) {
     window.setTimeout(() => {
@@ -558,11 +563,11 @@ function scrollTrainToStep(index, options = {}) {
 }
 
 function goNextTrainStep(options = {}) {
-  scrollTrainToStep(activeTrainStep + 1, options);
+  scrollTrainToStep(loopTrainStep(activeTrainStep + 1), options);
 }
 
 function goPrevTrainStep(options = {}) {
-  scrollTrainToStep(activeTrainStep - 1, options);
+  scrollTrainToStep(loopTrainStep(activeTrainStep - 1), options);
 }
 
 if (trainSlides.length) {
@@ -676,14 +681,14 @@ if (trainSlides.length) {
         suppressMediaClick = false;
       }, 180);
       const dragDelta = event.clientX - dragStartX;
-      const swipeThreshold = Math.max(56, trainStoryTrack.clientWidth * 0.08);
-      const velocityThreshold = 0.45;
+      const swipeThreshold = Math.max(40, trainStoryTrack.clientWidth * 0.06);
+      const velocityThreshold = 0.3;
       let targetIndex = getNearestTrainStep();
 
       if (dragDelta <= -swipeThreshold || dragVelocity > velocityThreshold) {
-        targetIndex = normalizeTrainStep(targetIndex + 1);
+        targetIndex = loopTrainStep(targetIndex + 1);
       } else if (dragDelta >= swipeThreshold || dragVelocity < -velocityThreshold) {
-        targetIndex = normalizeTrainStep(targetIndex - 1);
+        targetIndex = loopTrainStep(targetIndex - 1);
       }
 
       scrollTrainToStep(targetIndex, {

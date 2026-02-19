@@ -861,4 +861,64 @@ main {
   }
 }
 
+/* Make train prev/next arrows clearly visible and usable */
+#story #train-story-prev,
+#story #train-story-next {
+  position: absolute !important;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.8rem !important;
+  height: 2.8rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  clip: auto !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  border: 1px solid rgba(11, 27, 58, 0.2) !important;
+  border-radius: 999px !important;
+  background: rgba(244, 250, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 28px rgba(11, 27, 58, 0.16);
+  color: #113263 !important;
+  font-size: 0 !important;
+  z-index: 10;
+  cursor: pointer;
+}
+
+#story #train-story-prev {
+  left: clamp(0.45rem, 1.5vw, 1rem);
+}
+
+#story #train-story-next {
+  right: clamp(0.45rem, 1.5vw, 1rem);
+}
+
+#story #train-story-prev::before,
+#story #train-story-next::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+}
+
+#story #train-story-prev::before {
+  transform: rotate(-135deg);
+}
+
+#story #train-story-next::before {
+  transform: rotate(45deg);
+}
+
+@media (max-width: 760px) {
+  #story #train-story-prev,
+  #story #train-story-next {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+  }
+}
+
 
