@@ -10,13 +10,13 @@ function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   themeToggle?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   if (themeColorMeta) {
-    themeColorMeta.setAttribute("content", theme === "dark" ? "#151d1f" : "#f6f1e8");
+    themeColorMeta.setAttribute("content", theme === "dark" ? "#14213d" : "#eaf4ff");
   }
 }
 
 function getInitialTheme() {
   if (savedTheme === "dark" || savedTheme === "light") return savedTheme;
-  return systemThemeQuery.matches ? "dark" : "light";
+  return "light";
 }
 
 applyTheme(getInitialTheme());
@@ -31,7 +31,7 @@ themeToggle?.addEventListener("click", () => {
 systemThemeQuery.addEventListener("change", (event) => {
   const stored = localStorage.getItem("paperStoolTheme");
   if (stored === "dark" || stored === "light") return;
-  applyTheme(event.matches ? "dark" : "light");
+  applyTheme("light");
 });
 
 const revealItems = Array.from(document.querySelectorAll(".reveal"));
@@ -425,6 +425,7 @@ if (!prefersReducedMotion && parallaxImages.length) {
 }
 
 const trainStoryTrack = document.getElementById("train-story-track");
+const trainStoryline = document.querySelector(".train-storyline");
 const trainSlides = Array.from(document.querySelectorAll(".train-slide"));
 const trainStepCurrent = document.getElementById("train-step-current");
 const trainDots = Array.from(document.querySelectorAll(".train-story-dot"));
@@ -432,59 +433,71 @@ const trainPrev = document.getElementById("train-story-prev");
 const trainNext = document.getElementById("train-story-next");
 
 let activeTrainStep = 0;
+let touchStartX = null;
+let touchStartY = null;
 
 function normalizeTrainStep(index) {
   const max = Math.max(0, trainSlides.length - 1);
   return Math.min(max, Math.max(0, index));
 }
 
-function setTrainStepState(index) {
+function focusTrainSlideHeading(index) {
+  const heading = trainSlides[index]?.querySelector(".train-slide-copy h3");
+  if (!(heading instanceof HTMLElement)) return;
+  heading.setAttribute("tabindex", "-1");
+  heading.focus({ preventScroll: true });
+}
+
+function setTrainStepState(index, options = {}) {
+  const { moveFocus = false } = options;
   const safeIndex = normalizeTrainStep(index);
   activeTrainStep = safeIndex;
+
+  if (trainStoryTrack) {
+    trainStoryTrack.style.transform = `translate3d(-${safeIndex * 100}%, 0, 0)`;
+    trainStoryTrack.setAttribute("aria-label", `Train storyline carousel, step ${safeIndex + 1} of ${trainSlides.length}`);
+  }
 
   if (trainStepCurrent) {
     trainStepCurrent.textContent = String(safeIndex + 1).padStart(2, "0");
   }
 
+  trainSlides.forEach((slide, slideIndex) => {
+    const isActive = slideIndex === safeIndex;
+    slide.classList.toggle("is-active", isActive);
+    slide.setAttribute("aria-hidden", isActive ? "false" : "true");
+    if ("inert" in slide) slide.inert = !isActive;
+  });
+
   trainDots.forEach((dot, dotIndex) => {
     const isActive = dotIndex === safeIndex;
     dot.classList.toggle("is-active", isActive);
     dot.setAttribute("aria-selected", isActive ? "true" : "false");
+    dot.tabIndex = isActive ? 0 : -1;
     if (isActive) dot.setAttribute("aria-current", "true");
     else dot.removeAttribute("aria-current");
   });
 
   if (trainPrev) trainPrev.disabled = safeIndex === 0;
   if (trainNext) trainNext.disabled = safeIndex === trainSlides.length - 1;
+
+  if (moveFocus) {
+    window.setTimeout(() => {
+      focusTrainSlideHeading(safeIndex);
+    }, prefersReducedMotion ? 0 : 260);
+  }
 }
 
-function scrollToTrainStep(index) {
-  const safeIndex = normalizeTrainStep(index);
-  const target = trainSlides[safeIndex];
-  if (!target) return;
-  setTrainStepState(safeIndex);
-  target.scrollIntoView({
-    behavior: smoothBehavior,
-    block: "nearest",
-    inline: "start"
-  });
+function goToTrainStep(index, options = {}) {
+  setTrainStepState(index, options);
 }
 
-function getNearestTrainStep() {
-  if (!trainStoryTrack || !trainSlides.length) return 0;
-  const offset = trainStoryTrack.scrollLeft;
-  let nearestIndex = 0;
-  let nearestDistance = Number.POSITIVE_INFINITY;
+function goNextTrainStep(options = {}) {
+  goToTrainStep(activeTrainStep + 1, options);
+}
 
-  trainSlides.forEach((slide, index) => {
-    const distance = Math.abs(slide.offsetLeft - offset);
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestIndex = index;
-    }
-  });
-
-  return nearestIndex;
+function goPrevTrainStep(options = {}) {
+  goToTrainStep(activeTrainStep - 1, options);
 }
 
 if (trainSlides.length) {
@@ -493,49 +506,67 @@ if (trainSlides.length) {
   trainDots.forEach((dot) => {
     dot.addEventListener("click", () => {
       const target = Number(dot.dataset.storyTarget || "0");
-      scrollToTrainStep(target);
+      goToTrainStep(target, { moveFocus: true });
     });
   });
 
   trainPrev?.addEventListener("click", () => {
-    scrollToTrainStep(activeTrainStep - 1);
+    goPrevTrainStep({ moveFocus: true });
   });
 
   trainNext?.addEventListener("click", () => {
-    scrollToTrainStep(activeTrainStep + 1);
+    goNextTrainStep({ moveFocus: true });
   });
 
-  if (trainStoryTrack) {
-    let railTicking = false;
-    const updateFromScroll = () => {
-      setTrainStepState(getNearestTrainStep());
-      railTicking = false;
-    };
-
-    trainStoryTrack.addEventListener(
-      "scroll",
-      () => {
-        if (railTicking) return;
-        railTicking = true;
-        requestAnimationFrame(updateFromScroll);
-      },
-      { passive: true }
-    );
-
-    trainStoryTrack.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        scrollToTrainStep(activeTrainStep + 1);
-      } else if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        scrollToTrainStep(activeTrainStep - 1);
+  trainSlides.forEach((slide) => {
+    const media = slide.querySelector(".train-slide-media");
+    if (!(media instanceof HTMLElement)) return;
+    media.addEventListener("click", () => {
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        goNextTrainStep({ moveFocus: true });
       }
     });
+  });
 
-    window.addEventListener("resize", () => {
-      setTrainStepState(getNearestTrainStep());
-    });
-  }
+  const onTrainArrowKeydown = (event) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goNextTrainStep({ moveFocus: true });
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goPrevTrainStep({ moveFocus: true });
+    }
+  };
+
+  trainStoryTrack?.addEventListener("keydown", onTrainArrowKeydown);
+  trainStoryline?.addEventListener("keydown", onTrainArrowKeydown);
+
+  trainStoryTrack?.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.touches[0];
+      touchStartX = touch?.clientX ?? null;
+      touchStartY = touch?.clientY ?? null;
+    },
+    { passive: true }
+  );
+
+  trainStoryTrack?.addEventListener(
+    "touchend",
+    (event) => {
+      if (touchStartX === null || touchStartY === null) return;
+      const touch = event.changedTouches[0];
+      const dx = (touch?.clientX ?? touchStartX) - touchStartX;
+      const dy = (touch?.clientY ?? touchStartY) - touchStartY;
+      touchStartX = null;
+      touchStartY = null;
+
+      if (Math.abs(dx) < 44 || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) goNextTrainStep({ moveFocus: true });
+      else goPrevTrainStep({ moveFocus: true });
+    },
+    { passive: true }
+  );
 }
 
 const trainCompare = document.getElementById("train-compare");
@@ -562,6 +593,14 @@ if (trainCompareRange) {
     updateTrainCompare(Number(trainCompareRange.value || "52"));
   });
 }
+
+trainCompare?.addEventListener("click", () => {
+  if (!trainCompareRange || prefersReducedMotion) return;
+  const current = Number(trainCompareRange.value || "52");
+  const next = current >= 50 ? 32 : 68;
+  trainCompareRange.value = String(next);
+  updateTrainCompare(next);
+});
 
 const simPeople = document.getElementById("sim-people");
 const simPeopleValue = document.getElementById("sim-people-value");
