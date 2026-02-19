@@ -947,4 +947,48 @@ main {
   }
 }
 
+/* Story track utility (requested) */
+.story-track,
+#story .train-story-track {
+  --slideW: var(--story-slide-width, min(70vw, 1100px));
+  overflow-x: auto;
+  display: flex;
+  gap: clamp(12px, 2vw, 24px);
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: calc((100vw - var(--slideW)) / 2);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.story-track::-webkit-scrollbar,
+#story .train-story-track::-webkit-scrollbar {
+  display: none;
+}
+
+.story-track.is-dragging,
+#story .train-story-track.is-dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: grabbing;
+}
+
+.story-track.is-dragging *,
+#story .train-story-track.is-dragging * {
+  user-select: none;
+}
+
+.story-slide,
+#story .train-slide {
+  flex: 0 0 var(--slideW, var(--story-slide-width, min(70vw, 1100px)));
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.story-slide img,
+#story .train-slide img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 
