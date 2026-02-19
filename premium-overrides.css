@@ -673,6 +673,7 @@ main {
 #story .train-slide-media,
 #story .train-compare-wrap {
   position: relative;
+  width: 100%;
   margin: 0;
   aspect-ratio: var(--story-media-ratio);
   max-height: var(--story-media-max-height);
@@ -686,6 +687,7 @@ main {
 }
 
 #story .train-compare {
+  width: 100%;
   height: 100%;
   border: 0;
   border-radius: 0;
@@ -701,17 +703,6 @@ main {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-}
-
-/* Keep the first two train photos fully visible (no crop) */
-#story .train-slide[data-story-step="01"] .train-slide-media,
-#story .train-slide[data-story-step="02"] .train-slide-media {
-  background: linear-gradient(180deg, rgba(7, 20, 44, 0.28), rgba(7, 20, 44, 0.18));
-}
-
-#story .train-slide[data-story-step="01"] .train-slide-media img,
-#story .train-slide[data-story-step="02"] .train-slide-media img {
-  object-fit: contain !important;
 }
 
 #story .train-slide-media::after,

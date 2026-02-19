@@ -462,6 +462,15 @@ function loopTrainStep(index) {
   return (index + trainSlides.length) % trainSlides.length;
 }
 
+function isCompareInteractionTarget(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      ".compare, .compare-handle, .compare-track, .train-compare-wrap, #train-compare, #train-compare-overlay, #train-compare-divider, #train-compare-range"
+    )
+  );
+}
+
 function focusTrainSlideHeading(index) {
   const heading = trainSlides[index]?.querySelector(".train-slide-copy h3");
   if (!(heading instanceof HTMLElement)) return;
@@ -614,8 +623,10 @@ if (trainSlides.length) {
     media.addEventListener("click", (event) => {
       if (suppressMediaClick) return;
       const target = event.target;
+      if (target instanceof Element) {
+        if (isCompareInteractionTarget(target)) return;
+      }
       if (target instanceof HTMLElement) {
-        if (target.closest("#train-compare, #train-compare-range")) return;
         const interactive = target.closest(
           'button, a, input, select, textarea, label, [role="button"], [contenteditable="true"]'
         );
@@ -661,6 +672,7 @@ if (trainSlides.length) {
 
   trainStoryTrack?.addEventListener("pointerdown", (event) => {
     if (event.pointerType !== "mouse" || event.button !== 0 || !trainStoryTrack) return;
+    if (isCompareInteractionTarget(event.target)) return;
     draggingWithMouse = true;
     dragMoved = false;
     dragPointerId = event.pointerId;
@@ -735,6 +747,21 @@ const trainCompare = document.getElementById("train-compare");
 const trainCompareOverlay = document.getElementById("train-compare-overlay");
 const trainCompareDivider = document.getElementById("train-compare-divider");
 const trainCompareRange = document.getElementById("train-compare-range");
+
+function stopComparePointerPropagation(event) {
+  event.stopPropagation();
+  const target = event.target;
+  const isRangeInput = target instanceof HTMLInputElement && target.type === "range";
+  if (!isRangeInput && event.cancelable) {
+    event.preventDefault();
+  }
+}
+
+[trainCompare, trainCompareOverlay, trainCompareDivider, trainCompareRange].forEach((node) => {
+  if (!(node instanceof HTMLElement)) return;
+  node.addEventListener("pointerdown", stopComparePointerPropagation);
+  node.addEventListener("pointermove", stopComparePointerPropagation);
+});
 
 function updateTrainCompare(rawValue) {
   const value = Math.max(15, Math.min(85, rawValue));
