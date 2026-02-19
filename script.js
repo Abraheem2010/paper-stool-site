@@ -15,7 +15,7 @@ function applyTheme(theme) {
 }
 
 function getInitialTheme() {
-  if (savedTheme === "dark" || savedTheme === "light") return savedTheme;
+  if (savedTheme === "light") return "light";
   return "light";
 }
 
@@ -556,6 +556,26 @@ if (trainSlides.length) {
 
   trainStoryTrack?.addEventListener("keydown", onTrainArrowKeydown);
   trainStoryline?.addEventListener("keydown", onTrainArrowKeydown);
+
+  const isEditableTarget = (target) => {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName.toLowerCase();
+    return target.isContentEditable || tag === "input" || tag === "textarea" || tag === "select";
+  };
+
+  const isStoryVisible = () => {
+    if (!(trainStoryline instanceof HTMLElement)) return false;
+    const rect = trainStoryline.getBoundingClientRect();
+    return rect.top < window.innerHeight * 0.78 && rect.bottom > window.innerHeight * 0.18;
+  };
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+    if (!isStoryVisible()) return;
+    if (isEditableTarget(event.target)) return;
+    if (lightbox?.classList.contains("open")) return;
+    onTrainArrowKeydown(event);
+  });
 
   trainStoryTrack?.addEventListener(
     "touchstart",
