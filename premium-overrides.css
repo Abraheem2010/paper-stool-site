@@ -615,6 +615,7 @@ main {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   padding-inline: var(--story-track-pad);
   padding-block: 0.3rem 0.86rem;
   scrollbar-width: none;
@@ -635,6 +636,7 @@ main {
   width: var(--story-slide-width);
   min-height: auto;
   scroll-snap-align: center;
+  scroll-snap-stop: always;
   border: 1px solid rgba(11, 27, 58, 0.14);
   border-radius: 24px;
   overflow: hidden;
@@ -682,6 +684,8 @@ main {
   object-fit: cover !important;
   object-position: center;
   display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 #story .train-slide-media::after,

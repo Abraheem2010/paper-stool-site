@@ -445,7 +445,6 @@ const trainNext = document.getElementById("train-story-next");
 
 let activeTrainStep = 0;
 let trainSnapTimer = null;
-let trainInertiaFrame = null;
 let draggingWithMouse = false;
 let dragMoved = false;
 let dragPointerId = null;
@@ -487,61 +486,19 @@ function getNearestTrainStep() {
   return nearestIndex;
 }
 
-function stopTrainInertia() {
-  if (!trainInertiaFrame) return;
-  cancelAnimationFrame(trainInertiaFrame);
-  trainInertiaFrame = null;
-}
-
 function scheduleTrainSnap() {
   if (trainSnapTimer) {
     clearTimeout(trainSnapTimer);
   }
 
   trainSnapTimer = window.setTimeout(() => {
-    if (draggingWithMouse || trainInertiaFrame) return;
+    if (draggingWithMouse) return;
     const nearest = getNearestTrainStep();
     scrollTrainToStep(nearest, {
       behavior: prefersReducedMotion ? "auto" : "smooth",
       moveFocus: false
     });
   }, prefersReducedMotion ? 0 : 130);
-}
-
-function startTrainInertia(initialVelocity) {
-  if (!trainStoryTrack || prefersReducedMotion) {
-    scheduleTrainSnap();
-    return;
-  }
-
-  stopTrainInertia();
-  let velocity = initialVelocity * 18;
-  if (Math.abs(velocity) < 0.2) {
-    scheduleTrainSnap();
-    return;
-  }
-
-  const friction = 0.92;
-  const minVelocity = 0.2;
-
-  const frame = () => {
-    if (!trainStoryTrack) return;
-    trainStoryTrack.scrollLeft += velocity;
-    velocity *= friction;
-
-    const maxScroll = Math.max(0, trainStoryTrack.scrollWidth - trainStoryTrack.clientWidth);
-    const reachedEdge = trainStoryTrack.scrollLeft <= 0 || trainStoryTrack.scrollLeft >= maxScroll;
-
-    if (Math.abs(velocity) < minVelocity || reachedEdge) {
-      stopTrainInertia();
-      scheduleTrainSnap();
-      return;
-    }
-
-    trainInertiaFrame = requestAnimationFrame(frame);
-  };
-
-  trainInertiaFrame = requestAnimationFrame(frame);
 }
 
 function setTrainStepState(index, options = {}) {
@@ -632,8 +589,16 @@ if (trainSlides.length) {
   trainSlides.forEach((slide) => {
     const media = slide.querySelector(".train-slide-media, .train-compare-wrap");
     if (!(media instanceof HTMLElement)) return;
-    media.addEventListener("click", () => {
+    media.addEventListener("click", (event) => {
       if (suppressMediaClick) return;
+      const target = event.target;
+      if (target instanceof HTMLElement) {
+        if (target.closest("#train-compare, #train-compare-range")) return;
+        const interactive = target.closest(
+          'button, a, input, select, textarea, label, [role="button"], [contenteditable="true"]'
+        );
+        if (interactive) return;
+      }
       if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
         goNextTrainStep({ moveFocus: true });
       }
@@ -667,7 +632,6 @@ if (trainSlides.length) {
 
   trainStoryTrack?.addEventListener("pointerdown", (event) => {
     if (event.pointerType !== "mouse" || event.button !== 0 || !trainStoryTrack) return;
-    stopTrainInertia();
     draggingWithMouse = true;
     dragMoved = false;
     dragPointerId = event.pointerId;
@@ -711,7 +675,21 @@ if (trainSlides.length) {
       window.setTimeout(() => {
         suppressMediaClick = false;
       }, 180);
-      startTrainInertia(dragVelocity);
+      const dragDelta = event.clientX - dragStartX;
+      const swipeThreshold = Math.max(56, trainStoryTrack.clientWidth * 0.08);
+      const velocityThreshold = 0.45;
+      let targetIndex = getNearestTrainStep();
+
+      if (dragDelta <= -swipeThreshold || dragVelocity > velocityThreshold) {
+        targetIndex = normalizeTrainStep(targetIndex + 1);
+      } else if (dragDelta >= swipeThreshold || dragVelocity < -velocityThreshold) {
+        targetIndex = normalizeTrainStep(targetIndex - 1);
+      }
+
+      scrollTrainToStep(targetIndex, {
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        moveFocus: false
+      });
       return;
     }
 
@@ -742,7 +720,6 @@ if (trainSlides.length) {
   });
 
   window.addEventListener("resize", () => {
-    stopTrainInertia();
     scrollTrainToStep(getNearestTrainStep(), { behavior: "auto" });
   });
 }
