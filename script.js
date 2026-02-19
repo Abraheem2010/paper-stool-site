@@ -451,6 +451,7 @@ let dragPointerId = null;
 let dragStartX = 0;
 let dragStartScrollLeft = 0;
 let suppressMediaClick = false;
+const mouseDragThreshold = 7;
 
 function normalizeTrainStep(index) {
   const max = Math.max(0, trainSlides.length - 1);
@@ -622,6 +623,7 @@ if (trainSlides.length) {
     if (!(media instanceof HTMLElement)) return;
     media.addEventListener("click", (event) => {
       if (suppressMediaClick) return;
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
       const target = event.target;
       if (target instanceof Element) {
         if (isCompareInteractionTarget(target)) return;
@@ -631,14 +633,6 @@ if (trainSlides.length) {
           'button, a, input, select, textarea, label, [role="button"], [contenteditable="true"]'
         );
         if (interactive) return;
-      }
-      if (event instanceof MouseEvent) {
-        const rect = media.getBoundingClientRect();
-        const localX = event.clientX - rect.left;
-        if (localX < rect.width * 0.36) {
-          goPrevTrainStep({ moveFocus: true });
-          return;
-        }
       }
       goNextTrainStep({ moveFocus: true });
     });
@@ -673,11 +667,17 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener("pointerdown", (event) => {
     if (event.pointerType !== "mouse" || event.button !== 0 || !trainStoryTrack) return;
     if (isCompareInteractionTarget(event.target)) return;
+    if (event.target instanceof Element) {
+      if (event.target.closest(".train-story-controls, .train-story-nav, .train-story-dot, #train-autoplay-toggle")) {
+        return;
+      }
+    }
     draggingWithMouse = true;
     dragMoved = false;
     dragPointerId = event.pointerId;
     dragStartX = event.clientX;
     dragStartScrollLeft = trainStoryTrack.scrollLeft;
+    suppressMediaClick = false;
     trainStoryTrack.classList.add("is-dragging");
     trainStoryTrack.setPointerCapture?.(event.pointerId);
     event.preventDefault();
@@ -687,7 +687,10 @@ if (trainSlides.length) {
     if (!draggingWithMouse || event.pointerId !== dragPointerId || !trainStoryTrack) return;
 
     const dx = event.clientX - dragStartX;
-    if (Math.abs(dx) > 2) dragMoved = true;
+    if (Math.abs(dx) > mouseDragThreshold) {
+      dragMoved = true;
+      suppressMediaClick = true;
+    }
 
     trainStoryTrack.scrollLeft = dragStartScrollLeft - dx;
   });
@@ -701,10 +704,9 @@ if (trainSlides.length) {
     dragPointerId = null;
 
     if (dragMoved) {
-      suppressMediaClick = true;
       window.setTimeout(() => {
         suppressMediaClick = false;
-      }, 180);
+      }, 240);
       snapTrainToNearest({
         behavior: prefersReducedMotion ? "auto" : "smooth",
         moveFocus: false
@@ -717,6 +719,16 @@ if (trainSlides.length) {
 
   trainStoryTrack?.addEventListener("pointerup", finishPointerDrag);
   trainStoryTrack?.addEventListener("pointercancel", finishPointerDrag);
+  window.addEventListener("pointerup", finishPointerDrag);
+  window.addEventListener("pointercancel", finishPointerDrag);
+
+  window.addEventListener("blur", () => {
+    if (!draggingWithMouse || !trainStoryTrack) return;
+    draggingWithMouse = false;
+    trainStoryTrack.classList.remove("is-dragging");
+    dragPointerId = null;
+    scheduleTrainSnap();
+  });
 
   const isEditableTarget = (target) => {
     if (!(target instanceof HTMLElement)) return false;
