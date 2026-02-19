@@ -447,6 +447,8 @@ let activeTrainStep = 0;
 let snapTimer = null;
 let isWheeling = false;
 let wheelTimer = null;
+let isProgrammaticScroll = false;
+let programmaticTimer = null;
 let draggingWithMouse = false;
 let dragMoved = false;
 let dragPointerId = null;
@@ -514,7 +516,34 @@ function getTrainStepOffset(index) {
 
 function updateTrackSnapState() {
   if (!trainStoryTrack) return;
-  trainStoryTrack.classList.toggle("no-snap", isWheeling || draggingWithMouse);
+  trainStoryTrack.classList.toggle("no-snap", isWheeling || draggingWithMouse || isProgrammaticScroll);
+}
+
+function clearProgrammaticScrollGuard() {
+  if (programmaticTimer) {
+    clearTimeout(programmaticTimer);
+    programmaticTimer = null;
+  }
+  isProgrammaticScroll = false;
+  updateTrackSnapState();
+}
+
+function armProgrammaticScrollGuard(duration = 500) {
+  if (prefersReducedMotion) {
+    clearProgrammaticScrollGuard();
+    return;
+  }
+
+  isProgrammaticScroll = true;
+  updateTrackSnapState();
+
+  if (programmaticTimer) {
+    clearTimeout(programmaticTimer);
+  }
+  programmaticTimer = window.setTimeout(() => {
+    isProgrammaticScroll = false;
+    updateTrackSnapState();
+  }, duration);
 }
 
 function snapTrainToNearestSmooth(options = {}) {
@@ -525,6 +554,9 @@ function snapTrainToNearestSmooth(options = {}) {
   const behavior = options.behavior || (prefersReducedMotion ? "auto" : "smooth");
 
   if (Math.abs(currentLeft - targetLeft) > 1.5) {
+    if (behavior === "smooth") {
+      armProgrammaticScrollGuard(520);
+    }
     trainStoryTrack.scrollTo({ left: targetLeft, behavior });
   }
   setTrainStepState(nearest, { moveFocus: Boolean(options.moveFocus) });
@@ -536,7 +568,7 @@ function scheduleTrainSnap() {
   }
 
   snapTimer = window.setTimeout(() => {
-    if (draggingWithMouse || isWheeling) return;
+    if (draggingWithMouse || isWheeling || isProgrammaticScroll) return;
     snapTrainToNearestSmooth({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       moveFocus: false
@@ -591,6 +623,9 @@ function scrollTrainToStep(index, options = {}) {
   const slide = trainSlides[safeIndex];
   if (!(slide instanceof HTMLElement) || !trainStoryTrack) return;
 
+  if (behavior === "smooth") {
+    armProgrammaticScrollGuard(520);
+  }
   trainStoryTrack.scrollTo({
     left: getTrainStepOffset(safeIndex),
     behavior
@@ -670,7 +705,7 @@ if (trainSlides.length) {
   trainStoryTrack?.addEventListener(
     "scroll",
     () => {
-      if (isWheeling || draggingWithMouse) return;
+      if (isWheeling || draggingWithMouse || isProgrammaticScroll) return;
       scheduleTrainSnap();
     },
     { passive: true }
@@ -682,12 +717,20 @@ if (trainSlides.length) {
       if (!trainStoryTrack) return;
       if (isCompareInteractionTarget(event.target)) return;
 
+      clearProgrammaticScrollGuard();
       isWheeling = true;
       updateTrackSnapState();
 
       if (snapTimer) {
         clearTimeout(snapTimer);
         snapTimer = null;
+      }
+
+      const deltaX = Number(event.deltaX || 0);
+      const deltaY = Number(event.deltaY || 0);
+      if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) > 0.5) {
+        trainStoryTrack.scrollLeft += deltaY;
+        if (event.cancelable) event.preventDefault();
       }
 
       if (wheelTimer) {
@@ -707,7 +750,7 @@ if (trainSlides.length) {
         });
       }, trainSnapDelay);
     },
-    { passive: true }
+    { passive: false }
   );
 
   trainStoryTrack?.addEventListener("pointerdown", (event) => {
@@ -729,6 +772,7 @@ if (trainSlides.length) {
       wheelTimer = null;
     }
     isWheeling = false;
+    clearProgrammaticScrollGuard();
     trainStoryTrack.classList.add("is-dragging");
     updateTrackSnapState();
     trainStoryTrack.setPointerCapture?.(event.pointerId);
@@ -783,6 +827,14 @@ if (trainSlides.length) {
     dragPointerId = null;
     scheduleTrainSnap();
   });
+
+  if ("onscrollend" in window) {
+    trainStoryTrack?.addEventListener("scrollend", () => {
+      if (isWheeling || draggingWithMouse) return;
+      clearProgrammaticScrollGuard();
+      setTrainStepState(getNearestTrainStep());
+    });
+  }
 
   const isEditableTarget = (target) => {
     if (!(target instanceof HTMLElement)) return false;
