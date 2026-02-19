@@ -1209,3 +1209,227 @@ orderForm?.addEventListener("submit", (event) => {
     showToast("You're on the list. Early access reserved.");
   }, 950);
 });
+
+// Consolidated enhancements (previously in enhancements.js)
+(() => {
+  const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const trainAutoplayToggle = document.getElementById("train-autoplay-toggle");
+  const trainNextButton = document.getElementById("train-story-next");
+  const trainPrevButton = document.getElementById("train-story-prev");
+  const trainStoryDots = Array.from(document.querySelectorAll(".train-story-dot"));
+  const trainTrack = document.getElementById("train-story-track");
+
+  let trainAutoplayTimer = null;
+
+  function setAutoplayUi(enabled) {
+    if (!trainAutoplayToggle) return;
+    trainAutoplayToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+    trainAutoplayToggle.textContent = enabled ? "Auto-play: On" : "Auto-play: Off";
+  }
+
+  function stopTrainAutoplay() {
+    if (trainAutoplayTimer) {
+      window.clearInterval(trainAutoplayTimer);
+      trainAutoplayTimer = null;
+    }
+    setAutoplayUi(false);
+  }
+
+  function startTrainAutoplay() {
+    if (motionReduced || !trainNextButton) return;
+    stopTrainAutoplay();
+    setAutoplayUi(true);
+    trainAutoplayTimer = window.setInterval(() => {
+      trainNextButton.click();
+    }, 3800);
+  }
+
+  if (trainAutoplayToggle) {
+    if (motionReduced) {
+      trainAutoplayToggle.disabled = true;
+      trainAutoplayToggle.textContent = "Auto-play: Off";
+    } else {
+      trainAutoplayToggle.addEventListener("click", () => {
+        if (trainAutoplayTimer) {
+          stopTrainAutoplay();
+        } else {
+          startTrainAutoplay();
+        }
+      });
+
+      [trainPrevButton, trainNextButton, ...trainStoryDots].forEach((node) => {
+        node?.addEventListener("click", stopTrainAutoplay);
+      });
+
+      trainTrack?.addEventListener(
+        "touchstart",
+        () => {
+          stopTrainAutoplay();
+        },
+        { passive: true }
+      );
+    }
+  }
+
+  const productVideo = document.getElementById("product-video");
+  const timelineChips = Array.from(document.querySelectorAll(".timeline-chip"));
+
+  timelineChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const seekTime = Number(chip.dataset.seek || "0");
+      if (!(productVideo instanceof HTMLVideoElement)) return;
+      productVideo.currentTime = seekTime;
+      if (!motionReduced) {
+        productVideo.play().catch(() => {});
+      }
+    });
+  });
+
+  const modal = document.getElementById("lightbox");
+  const modalImage = document.getElementById("lightbox-image");
+  const modalCaption = document.getElementById("lightbox-caption");
+  const modalNavButtons = Array.from(document.querySelectorAll(".lightbox-nav"));
+  const galleryItems = Array.from(document.querySelectorAll(".gallery-item"));
+
+  let currentGalleryIndex = -1;
+  let lightboxTouchStartX = null;
+  let lightboxTouchStartY = null;
+
+  function getGallerySource(button) {
+    const img = button?.querySelector("img");
+    return button?.dataset.full || img?.src || "";
+  }
+
+  function sourceFingerprint(src) {
+    if (!src) return "";
+    try {
+      const url = new URL(src, window.location.href);
+      return `${url.pathname}`;
+    } catch {
+      return src;
+    }
+  }
+
+  function syncCurrentIndexFromImage() {
+    if (!(modalImage instanceof HTMLImageElement)) return;
+    const current = sourceFingerprint(modalImage.src);
+    const found = galleryItems.findIndex((button) => {
+      return sourceFingerprint(getGallerySource(button)) === current;
+    });
+    if (found >= 0) currentGalleryIndex = found;
+  }
+
+  function updateLightboxCaption() {
+    if (!modalCaption) return;
+    syncCurrentIndexFromImage();
+    const button = galleryItems[currentGalleryIndex];
+    const img = button?.querySelector("img");
+    const text = button?.querySelector("span")?.textContent?.trim() || img?.alt || "Gallery item";
+    modalCaption.textContent = text;
+  }
+
+  function preloadGalleryItem(index) {
+    if (!galleryItems.length) return;
+    const safe = ((index % galleryItems.length) + galleryItems.length) % galleryItems.length;
+    const src = getGallerySource(galleryItems[safe]);
+    if (!src) return;
+    const preloaded = new Image();
+    preloaded.src = src;
+  }
+
+  function openGalleryIndex(index) {
+    const safe = ((index % galleryItems.length) + galleryItems.length) % galleryItems.length;
+    const button = galleryItems[safe];
+    if (!button) return;
+    button.click();
+    currentGalleryIndex = safe;
+    window.setTimeout(() => {
+      updateLightboxCaption();
+      preloadGalleryItem(safe + 1);
+      preloadGalleryItem(safe - 1);
+    }, 10);
+  }
+
+  galleryItems.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      currentGalleryIndex = index;
+      window.setTimeout(() => {
+        updateLightboxCaption();
+        preloadGalleryItem(index + 1);
+        preloadGalleryItem(index - 1);
+      }, 10);
+    });
+  });
+
+  modalNavButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const step = Number(button.dataset.step || "0");
+      if (!step || !galleryItems.length) return;
+      openGalleryIndex(currentGalleryIndex + step);
+    });
+  });
+
+  modal?.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.touches[0];
+      lightboxTouchStartX = touch?.clientX ?? null;
+      lightboxTouchStartY = touch?.clientY ?? null;
+    },
+    { passive: true }
+  );
+
+  modal?.addEventListener(
+    "touchend",
+    (event) => {
+      if (lightboxTouchStartX === null || lightboxTouchStartY === null) return;
+      const touch = event.changedTouches[0];
+      const dx = (touch?.clientX ?? lightboxTouchStartX) - lightboxTouchStartX;
+      const dy = (touch?.clientY ?? lightboxTouchStartY) - lightboxTouchStartY;
+      lightboxTouchStartX = null;
+      lightboxTouchStartY = null;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      if (!galleryItems.length) return;
+      if (dx < 0) openGalleryIndex(currentGalleryIndex + 1);
+      else openGalleryIndex(currentGalleryIndex - 1);
+    },
+    { passive: true }
+  );
+
+  if (modalImage) {
+    const observer = new MutationObserver(() => {
+      updateLightboxCaption();
+      preloadGalleryItem(currentGalleryIndex + 1);
+      preloadGalleryItem(currentGalleryIndex - 1);
+    });
+    observer.observe(modalImage, { attributes: true, attributeFilter: ["src"] });
+  }
+
+  const orderFormNode = document.getElementById("order-form");
+  const reserveSubmitButton = document.getElementById("reserve-submit");
+
+  function isValidField(name, value) {
+    const text = value.trim();
+    if (name === "fullname") return text.length >= 2;
+    if (name === "phone") return /^05\d{8}$/.test(text);
+    if (name === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
+    if (name === "city") return text.length >= 2;
+    return true;
+  }
+
+  function updateReserveButtonState() {
+    if (!(orderFormNode instanceof HTMLFormElement) || !(reserveSubmitButton instanceof HTMLButtonElement)) return;
+    const fields = ["fullname", "phone", "email", "city"];
+    const valid = fields.every((name) => {
+      const field = orderFormNode.elements.namedItem(name);
+      if (!(field instanceof HTMLInputElement)) return false;
+      return isValidField(name, field.value || "");
+    });
+    reserveSubmitButton.disabled = !valid;
+  }
+
+  orderFormNode?.addEventListener("input", updateReserveButtonState);
+  orderFormNode?.addEventListener("change", updateReserveButtonState);
+  updateReserveButtonState();
+})();
