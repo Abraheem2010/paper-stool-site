@@ -645,9 +645,10 @@ function setTrainStepState(index, options = {}) {
   trainSlides.forEach((slide, slideIndex) => {
     const isActive = slideIndex === safeIndex;
     slide.classList.toggle("is-active", isActive);
-    slide.setAttribute("aria-hidden", "false");
-    slide.setAttribute("aria-current", isActive ? "true" : "false");
-    if ("inert" in slide) slide.inert = false;
+    slide.setAttribute("aria-hidden", isActive ? "false" : "true");
+    if (isActive) slide.setAttribute("aria-current", "true");
+    else slide.removeAttribute("aria-current");
+    if ("inert" in slide) slide.inert = !isActive;
   });
 
   trainDots.forEach((dot, dotIndex) => {
@@ -965,6 +966,11 @@ const simMapStool = document.getElementById("sim-map-stool");
 
 function renderSeatMap(container, seated, people, label) {
   if (!container) return;
+  if (people <= 0) {
+    container.innerHTML = "";
+    container.setAttribute("aria-label", `${label}: 0 seated out of 0`);
+    return;
+  }
 
   const dotCap = 24;
   const dots = Math.min(dotCap, people);
