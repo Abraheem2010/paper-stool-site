@@ -129,7 +129,7 @@ const navObserver = new IntersectionObserver(
 
 navSections.forEach((section) => navObserver.observe(section));
 
-const metricValues = Array.from(document.querySelectorAll(".metric-value, .impact-value"));
+const metricValues = Array.from(document.querySelectorAll(".count-up"));
 const animatedNumbers = new WeakSet();
 
 function formatValue(value, decimals) {
@@ -244,7 +244,7 @@ orderForm?.addEventListener("submit", (event) => {
   }
 
   if (formMessage) {
-    formMessage.textContent = "Request sent successfully. We will contact you shortly.";
+    formMessage.textContent = "Reservation received. We will contact you within 24 hours via WhatsApp or phone.";
     formMessage.style.color = "#0f9687";
   }
   orderForm.reset();
@@ -301,6 +301,7 @@ const simAdded = document.getElementById("sim-added");
 const simCoverage = document.getElementById("sim-coverage");
 const simStaticFill = document.getElementById("sim-static-fill");
 const simStoolFill = document.getElementById("sim-stool-fill");
+const simExplainer = document.getElementById("sim-explainer");
 
 function updateSimulator() {
   if (!simPeople) return;
@@ -317,6 +318,9 @@ function updateSimulator() {
   if (simCoverage) simCoverage.textContent = `${coverage}%`;
   if (simStaticFill) simStaticFill.style.width = `${Math.round((staticSeats / people) * 100)}%`;
   if (simStoolFill) simStoolFill.style.width = `${Math.round((stoolSeats / people) * 100)}%`;
+  if (simExplainer) {
+    simExplainer.textContent = `Fixed benches: ${staticSeats} seats | With Paper Stool: ${stoolSeats} seats`;
+  }
 }
 
 simPeople?.addEventListener("input", updateSimulator);
